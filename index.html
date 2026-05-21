@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0c0c0c" />
+  <meta name="description" content="Protino Hub — Premium animal proteins delivered fresh across Nigeria" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Protino Hub" />
+  <title>Protino Hub</title>
+
+  <!-- PWA Manifest inline -->
+  <link rel="manifest" href="#" id="manifest-link" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0c0c0c;
+      --surface: #161616;
+      --surface2: #1e1e1e;
+      --border: #272727;
+      --accent: #e8ff3a;
+      --accent-dim: #c4d830;
+      --text: #f2efe9;
+      --muted: #888;
+      --dim: #484848;
+      --green: #3affb8;
+      --red: #ff4a6e;
+      --orange: #ff7c3a;
+      --blue: #3ab8ff;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --nav-h: 64px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      overscroll-behavior: none;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* ── App Shell ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+      max-width: 430px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Top Bar ── */
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(12,12,12,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { font-size: 26px; }
+    .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); letter-spacing: 0.05em; line-height: 1; }
+    .logo-sub { font-size: 9px; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; }
+
+    .top-actions { display: flex; gap: 8px; }
+    .icon-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px; position: relative;
+      transition: background 0.15s;
+    }
+    .icon-btn:active { background: var(--border); }
+    .badge {
+      position: absolute; top: -5px; right: -5px;
+      background: var(--accent); color: #000;
+      border-radius: 50%; width: 18px; height: 18px;
+      font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Pages ── */
+    .page { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); }
+    .page.active { display: flex; }
+
+    /* ── Home ── */
+    .hero {
+      padding: 24px 20px 16px;
+      background: linear-gradient(180deg, #141400 0%, var(--bg) 100%);
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(232,255,58,0.08);
+      border: 1px solid rgba(232,255,58,0.2);
+      color: var(--accent); font-size: 11px;
+      letter-spacing: 0.08em; padding: 4px 12px;
+      border-radius: 20px; margin-bottom: 14px;
+    }
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px; line-height: 1.15;
+      color: var(--text); margin-bottom: 8px;
+    }
+    .hero-title em { color: var(--accent); font-style: italic; }
+    .hero-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+
+    .stats-row { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+    .stats-row::-webkit-scrollbar { display: none; }
+    .stat-chip {
+      flex-shrink: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stat-val { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); }
+    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.3; }
+
+    /* ── Category Scroll ── */
+    .cat-scroll {
+      display: flex; gap: 8px; padding: 16px 20px 12px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-pill {
+      flex-shrink: 0; padding: 7px 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; font-size: 13px; color: var(--muted);
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .cat-pill.active {
+      background: var(--accent); color: #000;
+      border-color: var(--accent); font-weight: 600;
+    }
+
+    /* ── Product Grid ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 16px;
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      position: relative;
+      display: flex; flex-direction: column;
+      transition: transform 0.15s;
+      overflow: hidden;
+    }
+    .product-card:active { transform: scale(0.97); }
+
+    .product-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 70% 20%, rgba(232,255,58,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .prod-badge {
+      position: absolute; top: 10px; right: 10px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: #000;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .prod-emoji { font-size: 38px; margin-bottom: 8px; display: block; }
+    .prod-cat { font-size: 9px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px; }
+    .prod-name { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; color: var(--text); }
+    .prod-desc { font-size: 11px; color: var(--dim); line-height: 1.4; margin-bottom: 10px; flex: 1; }
+    .prod-price { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--accent); margin-bottom: 10px; }
+    .prod-price span { font-family: 'DM Sans', sans-serif; font-size: 10px; color: var(--muted); }
+
+    .prod-actions { display: flex; align-items: center; gap: 6px; }
+    .qty-ctrl {
+      display: flex; align-items: center; gap: 4px;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 4px 6px;
+    }
+    .qty-btn {
+      background: none; border: none; color: var(--accent);
+      font-size: 16px; cursor: pointer; line-height: 1;
+      padding: 0 2px; font-family: 'DM Sans', sans-serif;
+    }
+    .qty-num { font-size: 12px; font-weight: 700; min-width: 16px; text-align: center; }
+    .add-btn {
+      flex: 1; background: var(--accent); color: #000;
+      border: none; border-radius: 8px; padding: 8px 0;
+      font-weight: 700; font-size: 11px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; letter-spacing: 0.03em;
+      transition: background 0.15s;
+    }
+    .add-btn:active { background: var(--accent-dim); }
+
+    /* ── Section Header ── */
+    .section-hdr {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 20px 12px;
+    }
+    .section-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
+    .section-count { font-size: 12px; color: var(--muted); }
+
+    /* ── Cart Page ── */
+    .cart-empty {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; color: var(--dim); padding: 40px 20px;
+    }
+    .cart-empty-icon { font-size: 56px; }
+    .cart-empty-text { font-size: 16px; color: var(--muted); font-family: 'DM Serif Display', serif; }
+    .cart-empty-sub { font-size: 13px; color: var(--dim); text-align: center; }
+
+    .cart-items-wrap { flex: 1; padding: 16px 16px 0; display: flex; flex-direction: column; gap: 10px; }
+
+    .cart-item {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .cart-item-emoji { font-size: 32px; flex-shrink: 0; }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-item-price { font-size: 11px; color: var(--muted); }
+    .cart-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .cart-item-total { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--accent); }
+    .remove-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--dim); padding: 2px; }
+
+    .cart-footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .cart-total-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .cart-total-label { font-size: 13px; color: var(--muted); }
+    .cart-total-amt { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--accent); }
+
+    .checkout-btn {
+      width: 100%; background: var(--accent); color: #000;
+      border: none; border-radius: 14px; padding: 16px;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      font-family: 'DM Serif Display', serif; letter-spacing: 0.02em;
+      transition: background 0.15s;
+    }
+    .checkout-btn:active { background: var(--accent-dim); }
+
+    /* ── Checkout Page ── */
+    .checkout-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+    .form-section {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px;
+    }
+    .form-title {
+      font-size: 11px; color: var(--accent); letter-spacing: 0.12em;
+      text-transform: uppercase; font-weight: 600; margin-bottom: 14px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+    .input-group:last-child { margin-bottom: 0; }
+    .input-label { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .text-input {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 14px;
+      color: var(--text); font-size: 14px;
+      font-family: 'DM Sans', sans-serif; outline: none;
+      transition: border-color 0.15s; width: 100%;
+    }
+    .text-input:focus { border-color: var(--accent); }
+
+    .order-summary-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .order-summary-item:last-of-type { border-bottom: none; }
+    .order-summary-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px;
+    }
+    .order-summary-total span:first-child { font-size: 14px; font-weight: 600; }
+    .order-summary-total span:last-child { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); }
+
+    .pay-btn {
+      width: 100%; background: #0BA4DB; color: #fff;
+      border: none; border-radius: 14px; padding: 16px;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; display: flex;
+      align-items: center; justify-content: center; gap: 8px;
+      transition: opacity 0.15s;
+    }
+    .pay-btn:active { opacity: 0.85; }
+    .demo-pay-btn {
+      width: 100%; background: var(--accent); color: #000;
+      border: none; border-radius: 14px; padding: 16px;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ── Orders Page ── */
+    .orders-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; }
+    .order-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px;
+    }
+    .order-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .order-id { font-size: 14px; font-weight: 700; }
+    .order-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .status-pill {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+    }
+    .order-items-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .order-item-chip {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 3px 10px; font-size: 11px; color: var(--muted);
+    }
+    .order-card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .order-addr { font-size: 11px; color: var(--dim); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .order-total { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); }
+
+    /* ── Profile Page ── */
+    .profile-wrap { padding: 24px 16px; }
+    .profile-header {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 20px; margin-bottom: 20px;
+    }
+    .avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: #000; flex-shrink: 0;
+      font-family: 'DM Serif Display', serif;
+    }
+    .profile-name { font-family: 'DM Serif Display', serif; font-size: 20px; }
+    .profile-email { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .profile-role {
+      display: inline-block; margin-top: 6px;
+      background: rgba(232,255,58,0.1); border: 1px solid rgba(232,255,58,0.3);
+      color: var(--accent); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 2px 10px; border-radius: 20px;
+    }
+
+    .menu-section { margin-bottom: 20px; }
+    .menu-title { font-size: 10px; color: var(--dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; padding: 0 4px; }
+    .menu-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 15px 16px; margin-bottom: 8px;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .menu-item:active { background: var(--surface2); }
+    .menu-item-left { display: flex; align-items: center; gap: 12px; }
+    .menu-item-icon { font-size: 20px; width: 32px; text-align: center; }
+    .menu-item-text { font-size: 14px; font-weight: 500; }
+    .menu-item-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .menu-arrow { color: var(--dim); font-size: 16px; }
+
+    .logout-btn {
+      width: 100%; background: rgba(255,74,110,0.08);
+      border: 1px solid rgba(255,74,110,0.25);
+      color: var(--red); border-radius: 14px; padding: 15px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; margin-top: 8px;
+      transition: background 0.15s;
+    }
+    .logout-btn:active { background: rgba(255,74,110,0.15); }
+
+    /* ── Auth Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+      display: none; align-items: flex-end; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet {
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      border: 1px solid var(--border);
+      border-bottom: none;
+      width: 100%; max-width: 430px;
+      padding: 24px 20px;
+      padding-bottom: calc(24px + var(--safe-bottom));
+      max-height: 90dvh; overflow-y: auto;
+      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .modal-handle {
+      width: 36px; height: 4px; background: var(--border);
+      border-radius: 2px; margin: 0 auto 20px;
+    }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+    .auth-btn {
+      width: 100%; background: var(--accent); color: #000;
+      border: none; border-radius: 14px; padding: 16px;
+      font-weight: 700; font-size: 16px; cursor: pointer;
+      font-family: 'DM Serif Display', serif; margin-top: 8px;
+    }
+    .auth-switch { text-align: center; margin-top: 18px; font-size: 13px; color: var(--muted); }
+    .auth-link { color: var(--accent); cursor: pointer; text-decoration: underline; }
+    .auth-tip { text-align: center; margin-top: 10px; font-size: 11px; color: var(--dim); }
+    .auth-error {
+      background: rgba(255,74,110,0.08); border: 1px solid rgba(255,74,110,0.25);
+      color: var(--red); padding: 10px 14px; border-radius: 10px;
+      font-size: 13px; margin-bottom: 14px;
+    }
+
+    /* ── Bottom Nav ── */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 430px;
+      background: rgba(12,12,12,0.95);
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding-bottom: var(--safe-bottom);
+      z-index: 50; height: calc(var(--nav-h) + var(--safe-bottom));
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 4px; padding: 8px 4px;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .nav-item:active { opacity: 0.6; }
+    .nav-icon { font-size: 22px; transition: transform 0.2s; }
+    .nav-label { font-size: 10px; color: var(--dim); letter-spacing: 0.04em; font-weight: 500; transition: color 0.2s; }
+    .nav-item.active .nav-icon { transform: translateY(-2px); }
+    .nav-item.active .nav-label { color: var(--accent); }
+    .nav-cart-wrap { position: relative; }
+
+    /* ── Toast ── */
+    .toast-container {
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; flex-direction: column; gap: 8px;
+      align-items: center; pointer-events: none;
+    }
+    .toast {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text); padding: 12px 20px; border-radius: 12px;
+      font-size: 13px; font-weight: 500; white-space: nowrap;
+      animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1);
+      max-width: 90vw; text-align: center;
+    }
+    .toast.success { border-color: var(--green); color: var(--green); background: rgba(58,255,184,0.06); }
+    .toast.error { border-color: var(--red); color: var(--red); background: rgba(255,74,110,0.06); }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Install Banner ── */
+    .install-banner {
+      display: none; align-items: center; gap: 12px;
+      background: linear-gradient(135deg, #1a1a00, var(--surface));
+      border-bottom: 1px solid rgba(232,255,58,0.2);
+      padding: 12px 16px;
+    }
+    .install-banner.show { display: flex; }
+    .install-banner-text { flex: 1; font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .install-banner-text strong { color: var(--text); }
+    .install-btn {
+      background: var(--accent); color: #000;
+      border: none; border-radius: 8px; padding: 7px 14px;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      white-space: nowrap; font-family: 'DM Sans', sans-serif;
+      flex-shrink: 0;
+    }
+    .install-close {
+      background: none; border: none; color: var(--dim);
+      font-size: 18px; cursor: pointer; padding: 2px; flex-shrink: 0;
+    }
+
+    /* ── Offline Banner ── */
+    .offline-banner {
+      display: none; align-items: center; justify-content: center;
+      gap: 8px; background: rgba(255,124,58,0.1);
+      border-bottom: 1px solid rgba(255,124,58,0.3);
+      padding: 8px 16px; font-size: 12px; color: var(--orange);
+    }
+    .offline-banner.show { display: flex; }
+
+    /* ── Animations ── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .product-card { animation: fadeIn 0.3s ease both; }
+    .product-card:nth-child(1) { animation-delay: 0.05s; }
+    .product-card:nth-child(2) { animation-delay: 0.1s; }
+    .product-card:nth-child(3) { animation-delay: 0.15s; }
+    .product-card:nth-child(4) { animation-delay: 0.2s; }
+    .product-card:nth-child(5) { animation-delay: 0.25s; }
+    .product-card:nth-child(6) { animation-delay: 0.3s; }
+
+    /* ── Pull-to-refresh indicator ── */
+    .ptr { text-align: center; padding: 16px; font-size: 12px; color: var(--dim); display: none; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Offline Banner -->
+  <div class="offline-banner" id="offlineBanner">
+    📡 You're offline — showing cached products
+  </div>
+
+  <!-- Install Banner -->
+  <div class="install-banner" id="installBanner">
+    <span style="font-size:24px">🥩</span>
+    <div class="install-banner-text">
+      <strong>Add to Home Screen</strong><br/>
+      Install Protino Hub for faster ordering
+    </div>
+    <button class="install-btn" id="installBtn">Install</button>
+    <button class="install-close" id="installClose">✕</button>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="logo">
+      <span class="logo-icon">🥩</span>
+      <div>
+        <div class="logo-text">Protino</div>
+        <div class="logo-sub">Hub</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <div class="icon-btn" onclick="showToast('🔍 Search coming soon!', 'success')">🔍</div>
+      <div class="icon-btn" onclick="goToCart()">
+        🛒
+        <span class="badge" id="cartBadge" style="display:none">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ── HOME PAGE ── -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="hero-eyebrow">🔥 Farm Fresh · Daily Delivery</div>
+      <h1 class="hero-title">
+        Fresh Proteins,<br/><em>At Your Door</em>
+      </h1>
+      <p class="hero-desc">Premium poultry, beef, pork, fish &amp; eggs. Delivered across Nigeria.</p>
+      <div class="stats-row">
+        <div class="stat-chip"><span class="stat-val">500+</span><div class="stat-label">Orders<br/>Daily</div></div>
+        <div class="stat-chip"><span class="stat-val">2hr</span><div class="stat-label">Avg<br/>Delivery</div></div>
+        <div class="stat-chip"><span class="stat-val">100%</span><div class="stat-label">Farm<br/>Fresh</div></div>
+        <div class="stat-chip"><span class="stat-val">₦0</span><div class="stat-label">Delivery<br/>Fee*</div></div>
+      </div>
+    </div>
+
+    <div class="cat-scroll" id="catScroll"></div>
+
+    <div class="section-hdr">
+      <span class="section-title">Products</span>
+      <span class="section-count" id="prodCount">0 items</span>
+    </div>
+
+    <div class="products-grid" id="productsGrid"></div>
+    <div style="height:8px"></div>
+  </div>
+
+  <!-- ── CART PAGE ── -->
+  <div class="page" id="page-cart">
+    <div class="section-hdr">
+      <span class="section-title">Your Cart</span>
+    </div>
+    <div id="cartContent"></div>
+  </div>
+
+  <!-- ── CHECKOUT PAGE ── -->
+  <div class="page" id="page-checkout">
+    <div class="section-hdr">
+      <span class="section-title">Checkout</span>
+    </div>
+    <div class="checkout-wrap">
+      <div class="form-section">
+        <div class="form-title">Delivery Details</div>
+        <div class="form-row">
+          <div class="input-group">
+            <label class="input-label">Full Name</label>
+            <input class="text-input" id="inp-name" placeholder="Amaka Obi" />
+          </div>
+          <div class="input-group">
+            <label class="input-label">Phone</label>
+            <input class="text-input" id="inp-phone" placeholder="08012345678" type="tel" />
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Email Address</label>
+          <input class="text-input" id="inp-email" placeholder="you@example.com" type="email" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Delivery Address</label>
+          <input class="text-input" id="inp-address" placeholder="15 Adeola Odeku St, VI, Lagos" />
+        </div>
+      </div>
+
+      <div class="form-section" id="checkoutSummary"></div>
+
+      <button class="demo-pay-btn" id="placeOrderBtn" onclick="placeOrder()">
+        🎯 Place Order
+      </button>
+      <p style="text-align:center;font-size:11px;color:var(--dim);margin-top:8px">
+        Demo mode · No real payment · Connect Paystack for live orders
+      </p>
+    </div>
+  </div>
+
+  <!-- ── ORDERS PAGE ── -->
+  <div class="page" id="page-orders">
+    <div class="section-hdr">
+      <span class="section-title">My Orders</span>
+    </div>
+    <div class="orders-wrap" id="ordersWrap"></div>
+  </div>
+
+  <!-- ── PROFILE PAGE ── -->
+  <div class="page" id="page-profile">
+    <div class="profile-wrap" id="profileWrap"></div>
+  </div>
+
+  <!-- ── AUTH MODAL ── -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div id="authError" class="auth-error" style="display:none"></div>
+      <div id="authContent"></div>
+    </div>
+  </div>
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="navigate('home')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" id="nav-cart" onclick="navigate('cart')">
+      <div class="nav-cart-wrap">
+        <span class="nav-icon">🛒</span>
+        <span class="badge" id="navCartBadge" style="display:none;top:-2px;right:-8px">0</span>
+      </div>
+      <span class="nav-label">Cart</span>
+    </div>
+    <div class="nav-item" id="nav-orders" onclick="navigate('orders')">
+      <span class="nav-icon">📦</span>
+      <span class="nav-label">Orders</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const STATE = {
+  user: JSON.parse(localStorage.getItem('ph_user') || 'null'),
+  cart: JSON.parse(localStorage.getItem('ph_cart') || '[]'),
+  orders: JSON.parse(localStorage.getItem('ph_orders') || '[]'),
+  qtys: {},
+  currentPage: 'home',
+  currentCat: 'All',
+};
+
+const PRODUCTS = [
+  { id:1, category:"Poultry", name:"Whole Chicken",    price:4500, unit:"per kg",    emoji:"🐔", badge:"bestseller", description:"Farm-raised, hormone-free", stock:50 },
+  { id:2, category:"Poultry", name:"Turkey (Whole)",   price:8500, unit:"per kg",    emoji:"🦃", badge:"premium",    description:"Juicy free-range turkey", stock:20 },
+  { id:3, category:"Beef",    name:"Beef Brisket",     price:6500, unit:"per kg",    emoji:"🥩", badge:"popular",    description:"Tender marbled brisket cut", stock:35 },
+  { id:4, category:"Beef",    name:"Assorted Beef",    price:5800, unit:"per kg",    emoji:"🍖", badge:null,          description:"Shaki, ponmo & roundabout", stock:40 },
+  { id:5, category:"Pork",    name:"Pork Ribs",        price:5200, unit:"per kg",    emoji:"🥓", badge:"new",         description:"Fall-off-the-bone smoky ribs", stock:25 },
+  { id:6, category:"Pork",    name:"Pork Belly",       price:4800, unit:"per kg",    emoji:"🐷", badge:null,          description:"Rich layered, great for grilling", stock:30 },
+  { id:7, category:"Fish",    name:"Titus Mackerel",   price:3200, unit:"per kg",    emoji:"🐟", badge:"bestseller", description:"Great for pepper soup", stock:60 },
+  { id:8, category:"Fish",    name:"Catfish",          price:3800, unit:"per kg",    emoji:"🐠", badge:"popular",    description:"Fresh river catfish, cleaned", stock:45 },
+  { id:9, category:"Eggs",    name:"Eggs (30 crate)",  price:3600, unit:"per crate", emoji:"🥚", badge:"value",       description:"Farm-fresh brown eggs", stock:80 },
+  { id:10,category:"Eggs",    name:"Quail Eggs (50)",  price:2800, unit:"per pack",  emoji:"🫙", badge:"new",         description:"Nutritious quail eggs", stock:40 },
+];
+
+const BADGE_COLORS = {
+  bestseller:"#e8ff3a", premium:"#ffd700", popular:"#ff6b35", new:"#3affb8", value:"#3ab8ff"
+};
+const STATUS_STYLES = {
+  pending:   {bg:"rgba(255,154,0,0.1)",   color:"#ff9a00"},
+  confirmed: {bg:"rgba(0,212,212,0.1)",   color:"#00d4d4"},
+  delivered: {bg:"rgba(58,255,184,0.1)",  color:"#3affb8"},
+  cancelled: {bg:"rgba(255,74,110,0.1)",  color:"#ff4a6e"},
+};
+
+// ============================================================
+// PERSIST
+// ============================================================
+function save() {
+  localStorage.setItem('ph_cart', JSON.stringify(STATE.cart));
+  localStorage.setItem('ph_orders', JSON.stringify(STATE.orders));
+  if (STATE.user) localStorage.setItem('ph_user', JSON.stringify(STATE.user));
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type='success') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 2800);
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById(`page-${page}`);
+  const nav = document.getElementById(`nav-${page}`);
+  if (el) { el.classList.add('active'); el.scrollTop = 0; }
+  if (nav) nav.classList.add('active');
+  STATE.currentPage = page;
+  if (page === 'cart') renderCart();
+  if (page === 'orders') renderOrders();
+  if (page === 'profile') renderProfile();
+  if (page === 'checkout') renderCheckoutSummary();
+}
+
+function goToCart() { navigate('cart'); }
+
+// ============================================================
+// PRODUCTS
+// ============================================================
+function getFiltered() {
+  return STATE.currentCat === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === STATE.currentCat);
+}
+
+function renderCategories() {
+  const cats = ['All', ...new Set(PRODUCTS.map(p => p.category))];
+  const el = document.getElementById('catScroll');
+  el.innerHTML = cats.map(c => `
+    <div class="cat-pill ${c === STATE.currentCat ? 'active' : ''}" onclick="selectCat('${c}')">${c}</div>
+  `).join('');
+}
+
+function selectCat(cat) {
+  STATE.currentCat = cat;
+  renderCategories();
+  renderProducts();
+}
+
+function getQty(id) { return STATE.qtys[id] || 1; }
+
+function changeQty(id, delta) {
+  STATE.qtys[id] = Math.max(1, (STATE.qtys[id] || 1) + delta);
+  document.getElementById(`qty-${id}`).textContent = STATE.qtys[id];
+}
+
+function renderProducts() {
+  const products = getFiltered();
+  document.getElementById('prodCount').textContent = `${products.length} items`;
+  document.getElementById('productsGrid').innerHTML = products.map(p => `
+    <div class="product-card">
+      ${p.badge ? `<div class="prod-badge" style="background:${BADGE_COLORS[p.badge]||'#888'}">${p.badge}</div>` : ''}
+      <span class="prod-emoji">${p.emoji}</span>
+      <div class="prod-cat">${p.category}</div>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-desc">${p.description}</div>
+      <div class="prod-price">₦${p.price.toLocaleString()} <span>${p.unit}</span></div>
+      <div class="prod-actions">
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
+          <span class="qty-num" id="qty-${p.id}">${getQty(p.id)}</span>
+          <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+        </div>
+        ${p.stock > 0
+          ? `<button class="add-btn" onclick="addToCart(${p.id})">Add</button>`
+          : `<div style="flex:1;text-align:center;font-size:11px;color:var(--dim);padding:8px 0">Sold out</div>`
+        }
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// CART
+// ============================================================
+function addToCart(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  const qty = getQty(productId);
+  const existing = STATE.cart.find(i => i.id === productId);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    STATE.cart.push({ ...product, qty });
+  }
+  save();
+  updateCartBadge();
+  showToast(`${product.emoji} ${product.name} added!`, 'success');
+}
+
+function removeFromCart(id) {
+  STATE.cart = STATE.cart.filter(i => i.id !== id);
+  save();
+  updateCartBadge();
+  renderCart();
+}
+
+function updateCartItemQty(id, delta) {
+  const item = STATE.cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, item.qty + delta);
+  save();
+  renderCart();
+}
+
+function updateCartBadge() {
+  const count = STATE.cart.reduce((s, i) => s + i.qty, 0);
+  const badges = [document.getElementById('cartBadge'), document.getElementById('navCartBadge')];
+  badges.forEach(b => {
+    if (!b) return;
+    if (count > 0) { b.style.display = 'flex'; b.textContent = count; }
+    else { b.style.display = 'none'; }
+  });
+}
+
+function cartTotal() {
+  return STATE.cart.reduce((s, i) => s + i.price * i.qty, 0);
+}
+
+function renderCart() {
+  const el = document.getElementById('cartContent');
+  if (STATE.cart.length === 0) {
+    el.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🍽️</div>
+        <div class="cart-empty-text">Your cart is empty</div>
+        <div class="cart-empty-sub">Browse our fresh products<br/>and add them here</div>
+        <button onclick="navigate('home')" style="margin-top:20px;background:var(--accent);color:#000;border:none;border-radius:12px;padding:12px 24px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">
+          Browse Products
+        </button>
+      </div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="cart-items-wrap">
+      ${STATE.cart.map(item => `
+        <div class="cart-item">
+          <span class="cart-item-emoji">${item.emoji}</span>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">₦${item.price.toLocaleString()} × ${item.qty}</div>
+          </div>
+          <div class="cart-item-right">
+            <div class="cart-item-total">₦${(item.price*item.qty).toLocaleString()}</div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <button class="qty-btn" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center" onclick="updateCartItemQty(${item.id},-1)">−</button>
+              <span style="font-size:12px;font-weight:700;min-width:20px;text-align:center">${item.qty}</span>
+              <button class="qty-btn" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center" onclick="updateCartItemQty(${item.id},1)">+</button>
+              <button class="remove-btn" onclick="removeFromCart(${item.id})">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label">Order Total</span>
+        <span class="cart-total-amt">₦${cartTotal().toLocaleString()}</span>
+      </div>
+      <button class="checkout-btn" onclick="navigate('checkout')">Proceed to Checkout →</button>
+    </div>`;
+}
+
+// ============================================================
+// CHECKOUT
+// ============================================================
+function renderCheckoutSummary() {
+  const el = document.getElementById('checkoutSummary');
+  el.innerHTML = `
+    <div class="form-title">Order Summary</div>
+    ${STATE.cart.map(i => `
+      <div class="order-summary-item">
+        <span>${i.emoji} ${i.name} × ${i.qty}</span>
+        <span style="color:var(--accent);font-weight:600">₦${(i.price*i.qty).toLocaleString()}</span>
+      </div>
+    `).join('')}
+    <div class="order-summary-total">
+      <span>Total</span>
+      <span>₦${cartTotal().toLocaleString()}</span>
+    </div>`;
+
+  // Pre-fill if logged in
+  if (STATE.user) {
+    document.getElementById('inp-name').value = STATE.user.name || '';
+    document.getElementById('inp-email').value = STATE.user.email || '';
+    document.getElementById('inp-phone').value = STATE.user.phone || '';
+  }
+}
+
+function placeOrder() {
+  const name = document.getElementById('inp-name').value.trim();
+  const phone = document.getElementById('inp-phone').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const address = document.getElementById('inp-address').value.trim();
+
+  if (!name || !phone || !email || !address) {
+    showToast('Please fill all delivery details', 'error');
+    return;
+  }
+  if (STATE.cart.length === 0) { showToast('Cart is empty', 'error'); return; }
+
+  const order = {
+    id: 'ORD-' + Date.now().toString().slice(-5),
+    customer_name: name,
+    customer_email: email,
+    customer_phone: phone,
+    address,
+    total: cartTotal(),
+    status: 'pending',
+    created_at: new Date().toISOString(),
+    items: STATE.cart.map(i => ({ name: i.name, emoji: i.emoji, qty: i.qty, price: i.price })),
+  };
+
+  STATE.orders.unshift(order);
+  STATE.cart = [];
+  save();
+  updateCartBadge();
+
+  // Fire notifications (WhatsApp + SMS fallback)
+  sendOrderNotifications(order).then(result => {
+    showOrderConfirmModal(order, result);
+  });
+
+}
+
+// ============================================================
+// ORDERS
+// ============================================================
+function renderOrders() {
+  const el = document.getElementById('ordersWrap');
+  if (STATE.orders.length === 0) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:var(--dim)">
+        <div style="font-size:48px;margin-bottom:16px">📦</div>
+        <div style="font-size:16px;color:var(--muted);font-family:'DM Serif Display',serif;margin-bottom:8px">No orders yet</div>
+        <div style="font-size:13px;margin-bottom:24px">Start shopping to see your orders here</div>
+        <button onclick="navigate('home')" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:12px 24px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">Browse Products</button>
+      </div>`;
+    return;
+  }
+  el.innerHTML = STATE.orders.map(o => {
+    const sc = STATUS_STYLES[o.status] || STATUS_STYLES.pending;
+    return `
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-id">${o.id}</div>
+            <div class="order-date">${new Date(o.created_at).toLocaleString('en-NG', {dateStyle:'medium',timeStyle:'short'})}</div>
+          </div>
+          <div class="status-pill" style="background:${sc.bg};color:${sc.color}">${o.status}</div>
+        </div>
+        <div class="order-items-chips">
+          ${o.items.map(i => `<div class="order-item-chip">${i.emoji} ${i.name} ×${i.qty}</div>`).join('')}
+        </div>
+        <div class="order-card-footer">
+          <div class="order-addr">📍 ${o.address || 'Lagos, Nigeria'}</div>
+          <div class="order-total">₦${o.total.toLocaleString()}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// PROFILE
+// ============================================================
+function renderProfile() {
+  const el = document.getElementById('profileWrap');
+  if (!STATE.user) {
+    el.innerHTML = `
+      <div style="text-align:center;padding:60px 20px">
+        <div style="font-size:56px;margin-bottom:20px">👤</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:8px">Welcome to Protino Hub</div>
+        <div style="font-size:14px;color:var(--muted);margin-bottom:32px;line-height:1.6">Sign in to track your orders,<br/>save your address, and more</div>
+        <button onclick="openAuth('login')" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:14px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;font-family:'DM Serif Display',serif;margin-bottom:12px">
+          Sign In
+        </button>
+        <button onclick="openAuth('signup')" style="width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:16px;font-weight:600;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif">
+          Create Account
+        </button>
+        <div style="margin-top:16px;font-size:11px;color:var(--dim)">
+          💡 Tip: Use "admin@protino.ng" to demo admin access
+        </div>
+      </div>`;
+    return;
+  }
+
+  const initials = STATE.user.name ? STATE.user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) : '?';
+  const isAdmin = STATE.user.role === 'admin';
+
+  el.innerHTML = `
+    <div class="profile-header">
+      <div class="avatar">${initials}</div>
+      <div>
+        <div class="profile-name">${STATE.user.name || 'User'}</div>
+        <div class="profile-email">${STATE.user.email || ''}</div>
+        <div class="profile-role">${STATE.user.role || 'customer'}</div>
+      </div>
+    </div>
+
+    ${isAdmin ? `
+    <div class="menu-section">
+      <div class="menu-title">Admin</div>
+      <div class="menu-item" onclick="showToast('Admin panel coming in next update!', 'success')">
+        <div class="menu-item-left">
+          <span class="menu-item-icon">⚙️</span>
+          <div>
+            <div class="menu-item-text">Admin Dashboard</div>
+            <div class="menu-item-sub">Manage orders, products & revenue</div>
+          </div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>` : ''}
+
+    <div class="menu-section">
+      <div class="menu-title">Account</div>
+      <div class="menu-item" onclick="navigate('orders')">
+        <div class="menu-item-left">
+          <span class="menu-item-icon">📦</span>
+          <div>
+            <div class="menu-item-text">My Orders</div>
+            <div class="menu-item-sub">${STATE.orders.length} order${STATE.orders.length!==1?'s':''} placed</div>
+          </div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="showToast('Notifications coming soon!', 'success')">
+        <div class="menu-item-left">
+          <span class="menu-item-icon">🔔</span>
+          <div>
+            <div class="menu-item-text">Notifications</div>
+            <div class="menu-item-sub">Order updates & promotions</div>
+          </div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </div>
+      <div class="menu-item" onclick="openWaSetup()">
+        <div class="menu-item-left">
+          <span class="menu-item-icon">&#128172;</span>
+          <div>
+            <div class="menu-item-text">WhatsApp Alerts</div>
+            <div class="menu-item-sub">Configure order notifications</div>
+          </div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>
+
+    <div class="menu-section">
+      <div class="menu-title">Support</div>
+      <div class="menu-item" onclick="showToast('📞 Call us: 0800-PROTINO', 'success')">
+        <div class="menu-item-left">
+          <span class="menu-item-icon">📞</span>
+          <div>
+            <div class="menu-item-text">Contact Support</div>
+            <div class="menu-item-sub">0800-PROTINO · 8am–8pm daily</div>
+          </div>
+        </div>
+        <span class="menu-arrow">›</span>
+      </div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">Sign Out</button>
+    <div style="height:16px"></div>`;
+}
+
+// ============================================================
+// AUTH
+// ============================================================
+function openAuth(mode) {
+  const modal = document.getElementById('authModal');
+  const content = document.getElementById('authContent');
+  const errorEl = document.getElementById('authError');
+  errorEl.style.display = 'none';
+
+  if (mode === 'login') {
+    content.innerHTML = `
+      <div class="modal-title">Welcome Back 👋</div>
+      <div class="modal-sub">Log in to track orders and save your details</div>
+      <div class="input-group">
+        <label class="input-label">Email Address</label>
+        <input class="text-input" id="auth-email" placeholder="you@example.com" type="email" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <input class="text-input" id="auth-pw" placeholder="••••••••" type="password" />
+      </div>
+      <button class="auth-btn" onclick="doLogin()">Sign In →</button>
+      <div class="auth-switch">
+        Don't have an account? <span class="auth-link" onclick="openAuth('signup')">Create one</span>
+      </div>
+      <div class="auth-tip">💡 Use admin@protino.ng for admin demo</div>`;
+  } else {
+    content.innerHTML = `
+      <div class="modal-title">Join Protino Hub 🥩</div>
+      <div class="modal-sub">Create your account and start ordering fresh proteins</div>
+      <div class="form-row">
+        <div class="input-group">
+          <label class="input-label">Full Name</label>
+          <input class="text-input" id="auth-name" placeholder="Amaka Obi" />
+        </div>
+        <div class="input-group">
+          <label class="input-label">Phone</label>
+          <input class="text-input" id="auth-phone" placeholder="08012345678" type="tel" />
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Email Address</label>
+        <input class="text-input" id="auth-email" placeholder="you@example.com" type="email" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <input class="text-input" id="auth-pw" placeholder="Min. 6 characters" type="password" />
+      </div>
+      <button class="auth-btn" onclick="doSignup()">Create Account →</button>
+      <div class="auth-switch">
+        Already have an account? <span class="auth-link" onclick="openAuth('login')">Sign in</span>
+      </div>`;
+  }
+
+  modal.classList.add('open');
+}
+
+function closeAuth() {
+  document.getElementById('authModal').classList.remove('open');
+}
+
+document.getElementById('authModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAuth();
+});
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function doLogin() {
+  const email = document.getElementById('auth-email')?.value.trim();
+  const pw = document.getElementById('auth-pw')?.value;
+  if (!email || !pw) { showAuthError('Please enter email and password'); return; }
+  // Demo auth
+  const user = {
+    id: 'demo-' + Date.now(),
+    email,
+    name: email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c => c.toUpperCase()),
+    role: email.includes('admin') ? 'admin' : 'customer',
+    phone: '',
+  };
+  STATE.user = user;
+  save();
+  closeAuth();
+  showToast(`Welcome back, ${user.name}! 👋`, 'success');
+  renderProfile();
+}
+
+function doSignup() {
+  const name = document.getElementById('auth-name')?.value.trim();
+  const phone = document.getElementById('auth-phone')?.value.trim();
+  const email = document.getElementById('auth-email')?.value.trim();
+  const pw = document.getElementById('auth-pw')?.value;
+  if (!name || !email || !pw) { showAuthError('Please fill all required fields'); return; }
+  if (pw.length < 6) { showAuthError('Password must be at least 6 characters'); return; }
+  const user = { id: 'user-' + Date.now(), name, email, phone, role: 'customer' };
+  STATE.user = user;
+  save();
+  closeAuth();
+  showToast(`Welcome to Protino Hub, ${name}! 🎉`, 'success');
+  renderProfile();
+}
+
+function logout() {
+  STATE.user = null;
+  localStorage.removeItem('ph_user');
+  showToast('Logged out successfully', 'success');
+  renderProfile();
+}
+
+// ============================================================
+// PWA — Service Worker & Manifest
+// ============================================================
+const MANIFEST = {
+  name: "Protino Hub",
+  short_name: "Protino",
+  description: "Premium animal proteins delivered fresh across Nigeria",
+  start_url: "/",
+  display: "standalone",
+  background_color: "#0c0c0c",
+  theme_color: "#0c0c0c",
+  orientation: "portrait",
+  icons: [
+    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230c0c0c' rx='32'/><text y='130' x='96' font-size='110' text-anchor='middle'>🥩</text></svg>", sizes: "192x192", type: "image/svg+xml" },
+    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230c0c0c' rx='80'/><text y='360' x='256' font-size='300' text-anchor='middle'>🥩</text></svg>", sizes: "512x512", type: "image/svg+xml" }
+  ],
+  categories: ["food", "shopping"],
+  shortcuts: [
+    { name: "Order Now", url: "/?page=home", description: "Browse and order fresh proteins" },
+    { name: "My Orders", url: "/?page=orders", description: "Track your deliveries" }
+  ]
+};
+
+// Inject manifest as blob URL
+const manifestBlob = new Blob([JSON.stringify(MANIFEST)], { type: 'application/manifest+json' });
+document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
+
+// Service Worker
+const SW_CODE = `
+const CACHE = 'protino-v1';
+const ASSETS = ['/'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys =>
+    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+  ));
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
+  );
+});
+
+self.addEventListener('push', e => {
+  const data = e.data?.json() || { title: 'Protino Hub', body: 'Your order update is ready!' };
+  e.waitUntil(self.registration.showNotification(data.title, {
+    body: data.body, icon: '/icon-192.png', badge: '/badge.png',
+    vibrate: [200, 100, 200], tag: 'protino-order'
+  }));
+});
+`;
+
+if ('serviceWorker' in navigator) {
+  const swBlob = new Blob([SW_CODE], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(swBlob);
+  navigator.serviceWorker.register(swUrl, { scope: '/' })
+    .then(() => console.log('✅ Service Worker registered'))
+    .catch(e => console.log('SW error:', e));
+}
+
+// ── Install prompt ──────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!localStorage.getItem('ph_install_dismissed')) {
+    document.getElementById('installBanner').classList.add('show');
+  }
+});
+
+document.getElementById('installBtn').onclick = async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  if (outcome === 'accepted') showToast('✅ Protino Hub installed!', 'success');
+  deferredPrompt = null;
+  document.getElementById('installBanner').classList.remove('show');
+};
+
+document.getElementById('installClose').onclick = () => {
+  localStorage.setItem('ph_install_dismissed', '1');
+  document.getElementById('installBanner').classList.remove('show');
+};
+
+// ── Offline detection ────────────────────────────────────────
+function updateOnlineStatus() {
+  const banner = document.getElementById('offlineBanner');
+  if (!navigator.onLine) banner.classList.add('show');
+  else banner.classList.remove('show');
+}
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ============================================================
+// NOTIFICATIONS — WhatsApp + SMS Fallback (Termii)
+// ============================================================
+const NOTIFY_CONFIG = {
+  adminPhone:   localStorage.getItem('ph_admin_phone')   || '2348012345678',
+  termiiKey:    localStorage.getItem('ph_termii_key')    || '',
+  termiiSender: localStorage.getItem('ph_termii_sender') || 'Protino',
+  // channels: 'auto' | 'whatsapp_only' | 'sms_only' | 'both'
+  channel:      localStorage.getItem('ph_notify_channel') || 'auto',
+};
+
+// ── Message builders ─────────────────────────────────────────
+function buildWhatsAppMsg(order) {
+  const lines = order.items.map(i =>
+    `  \u2022 ${i.emoji} ${i.name} \u00d7${i.qty} \u2014 \u20a6${(i.price*i.qty).toLocaleString()}`
+  ).join('\n');
+  return (
+    `\ud83e\udd69 *PROTINO HUB \u2014 Order Confirmed!*\n\n` +
+    `Hi ${order.customer_name} \ud83d\udc4b\n\n` +
+    `Your order *${order.id}* is confirmed and being prepared.\n\n` +
+    `*\ud83d\udce6 Items:*\n${lines}\n\n` +
+    `*\ud83d\udcb0 Total: \u20a6${order.total.toLocaleString()}*\n` +
+    `*\ud83d\udccd Address:* ${order.address}\n\n` +
+    `*\u23f1 ETA:* 1\u20132 hours\n\n` +
+    `_Reply or call 0800-PROTINO for support_`
+  );
+}
+
+function buildSMSMsg(order) {
+  // SMS: plain text, no markdown, under 160 chars per segment
+  const items = order.items.map(i => `${i.name}x${i.qty}`).join(', ');
+  return (
+    `PROTINO HUB: Hi ${order.customer_name}, Order ${order.id} confirmed! ` +
+    `Items: ${items}. Total: N${order.total.toLocaleString()}. ` +
+    `Delivery: ${order.address}. ETA 1-2hrs. Call 0800-PROTINO for help.`
+  );
+}
+
+function buildAdminWhatsAppMsg(order) {
+  const lines = order.items.map(i => `  \u2022 ${i.emoji} ${i.name} \u00d7${i.qty}`).join('\n');
+  return (
+    `\ud83d\udd14 *NEW ORDER \u2014 PROTINO HUB*\n\n` +
+    `*ID:* ${order.id}\n` +
+    `*Time:* ${new Date(order.created_at).toLocaleString('en-NG')}\n\n` +
+    `*\ud83d\udc64 Customer:*\n` +
+    `  ${order.customer_name} | ${order.customer_phone}\n` +
+    `  ${order.customer_email}\n\n` +
+    `*\ud83d\udce6 Items:*\n${lines}\n\n` +
+    `*\ud83d\udcb0 Total: \u20a6${order.total.toLocaleString()}*\n\n` +
+    `*\ud83d\udccd Deliver to:*\n${order.address}\n\n` +
+    `_Confirm order in Protino Hub admin panel._`
+  );
+}
+
+function buildAdminSMSMsg(order) {
+  const items = order.items.map(i => `${i.name}x${i.qty}`).join(', ');
+  return (
+    `PROTINO NEW ORDER ${order.id}: ${order.customer_name} (${order.customer_phone}). ` +
+    `${items}. Total: N${order.total.toLocaleString()}. ` +
+    `Deliver: ${order.address}`
+  );
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function normalisePhone(phone) {
+  return phone.replace(/\D/g,'').replace(/^0/,'234');
+}
+
+function waLink(phone, message) {
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
+// ── Termii API sender ────────────────────────────────────────
+async function termiiSend(phone, message, channel = 'whatsapp') {
+  // channel: 'whatsapp' | 'generic' (SMS)
+  if (!NOTIFY_CONFIG.termiiKey) return { ok: false, reason: 'no_key' };
+  try {
+    const res = await fetch('https://api.ng.termii.com/api/sms/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to:        phone,
+        from:      NOTIFY_CONFIG.termiiSender,
+        sms:       message,
+        type:      'plain',
+        channel:   channel,   // 'whatsapp' or 'generic'
+        api_key:   NOTIFY_CONFIG.termiiKey,
+      }),
+    });
+    const data = await res.json();
+    return { ok: res.ok, data };
+  } catch (e) {
+    return { ok: false, reason: 'network_error', error: e.message };
+  }
+}
+
+// ── Smart dispatch with fallback logic ───────────────────────
+async function sendOrderNotifications(order) {
+  const custPhone  = normalisePhone(order.customer_phone);
+  const adminPhone = normalisePhone(NOTIFY_CONFIG.adminPhone);
+  const hasTermii  = !!NOTIFY_CONFIG.termiiKey;
+  const ch         = NOTIFY_CONFIG.channel;
+
+  const result = {
+    customerWaUrl:  waLink(custPhone,  buildWhatsAppMsg(order)),
+    adminWaUrl:     waLink(adminPhone, buildAdminWhatsAppMsg(order)),
+    termiiResults:  [],
+    autoSent:       false,
+  };
+
+  // ── Auto mode: try WhatsApp via Termii, fallback to SMS ──
+  if (hasTermii && (ch === 'auto' || ch === 'whatsapp_only' || ch === 'both')) {
+    const waRes = await termiiSend(custPhone, buildWhatsAppMsg(order), 'whatsapp');
+    result.termiiResults.push({ channel:'WhatsApp', target:'customer', ...waRes });
+
+    if (!waRes.ok && ch === 'auto') {
+      // Fallback: send SMS instead
+      const smsRes = await termiiSend(custPhone, buildSMSMsg(order), 'generic');
+      result.termiiResults.push({ channel:'SMS (fallback)', target:'customer', ...smsRes });
+    }
+
+    // Admin WhatsApp alert
+    const adminRes = await termiiSend(adminPhone, buildAdminWhatsAppMsg(order), 'whatsapp');
+    result.termiiResults.push({ channel:'WhatsApp', target:'admin', ...adminRes });
+    result.autoSent = waRes.ok || result.termiiResults.some(r => r.ok);
+  }
+
+  if (hasTermii && (ch === 'sms_only' || ch === 'both')) {
+    const smsRes  = await termiiSend(custPhone,  buildSMSMsg(order),      'generic');
+    const adminSm = await termiiSend(adminPhone, buildAdminSMSMsg(order), 'generic');
+    result.termiiResults.push(
+      { channel:'SMS', target:'customer', ...smsRes },
+      { channel:'SMS', target:'admin',    ...adminSm }
+    );
+    result.autoSent = result.autoSent || smsRes.ok;
+  }
+
+  return result;
+}
+
+// ── Order confirm modal ──────────────────────────────────────
+function showOrderConfirmModal(order, result) {
+  const modal   = document.getElementById('authModal');
+  const content = document.getElementById('authContent');
+  document.getElementById('authError').style.display = 'none';
+
+  const autoSent   = result.autoSent;
+  const hasTermii  = !!NOTIFY_CONFIG.termiiKey;
+
+  // Build termii status rows
+  let termiiRows = '';
+  if (result.termiiResults.length > 0) {
+    termiiRows = result.termiiResults.map(r => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+        <span style="color:var(--muted)">${r.channel} \u2192 ${r.target}</span>
+        <span style="color:${r.ok ? 'var(--green)' : 'var(--red)'}">
+          ${r.ok ? '\u2705 Sent' : '\u274c Failed' + (r.reason ? ` (${r.reason})` : '')}
+        </span>
+      </div>`).join('');
+  }
+
+  content.innerHTML = `
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:52px;margin-bottom:10px">&#127881;</div>
+      <div class="modal-title" style="text-align:center">Order Placed!</div>
+      <div class="modal-sub" style="text-align:center">
+        <b style="color:var(--accent)">${order.id}</b> &mdash; &#8358;${order.total.toLocaleString()}
+      </div>
+    </div>
+
+    ${autoSent ? `
+    <div style="background:rgba(58,255,184,0.08);border:1px solid rgba(58,255,184,0.25);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
+      <div style="font-size:20px;margin-bottom:6px">&#9989;</div>
+      <div style="font-size:13px;color:var(--green);font-weight:600">Notifications sent automatically!</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:4px">Customer &amp; admin alerted via Termii</div>
+      ${termiiRows ? `<div style="margin-top:10px">${termiiRows}</div>` : ''}
+    </div>` : `
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:2px">
+        ${hasTermii ? '&#9888;&#65039; Auto-send failed &mdash; use manual buttons below' : 'Tap to send WhatsApp notifications'}
+      </div>
+      <a href="${result.customerWaUrl}" target="_blank" style="text-decoration:none">
+        <div style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
+          <div style="font-size:26px">&#128172;</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#25D366">WhatsApp Customer</div>
+            <div style="font-size:11px;color:var(--muted)">Confirmation to ${order.customer_name}</div>
+          </div>
+          <div style="font-size:16px;color:var(--dim)">&#8250;</div>
+        </div>
+      </a>
+      <a href="${result.adminWaUrl}" target="_blank" style="text-decoration:none">
+        <div style="background:rgba(58,255,184,0.06);border:1px solid rgba(58,255,184,0.2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
+          <div style="font-size:26px">&#128276;</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--green)">WhatsApp Admin</div>
+            <div style="font-size:11px;color:var(--muted)">New order alert to kitchen team</div>
+          </div>
+          <div style="font-size:16px;color:var(--dim)">&#8250;</div>
+        </div>
+      </a>
+      <div onclick="sendSMSFallback('${order.customer_phone}', '${encodeURIComponent(buildSMSMsg(order))}')"
+           style="background:rgba(232,255,58,0.06);border:1px solid rgba(232,255,58,0.2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
+        <div style="font-size:26px">&#128241;</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--accent)">Send SMS Instead</div>
+          <div style="font-size:11px;color:var(--muted)">Opens device SMS for customers without WhatsApp</div>
+        </div>
+        <div style="font-size:16px;color:var(--dim)">&#8250;</div>
+      </div>
+    </div>`}
+
+    <button onclick="closeAuth();navigate('orders');"
+      style="width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:'DM Serif Display',serif">
+      View My Orders &#8594;
+    </button>`;
+
+  modal.classList.add('open');
+}
+
+// ── SMS fallback via device SMS app ─────────────────────────
+function sendSMSFallback(phone, encodedMsg) {
+  const cleaned = normalisePhone(phone);
+  const msg = decodeURIComponent(encodedMsg);
+  // Opens native SMS app on mobile
+  window.location.href = `sms:+${cleaned}?body=${encodeURIComponent(msg)}`;
+  showToast('\ud83d\udcf1 Opening SMS app...', 'success');
+}
+
+// ── Notification Settings modal ──────────────────────────────
+function openWaSetup() {
+  const modal   = document.getElementById('authModal');
+  const content = document.getElementById('authContent');
+  document.getElementById('authError').style.display = 'none';
+
+  const savedAdmin   = localStorage.getItem('ph_admin_phone')    || '';
+  const savedKey     = localStorage.getItem('ph_termii_key')     || '';
+  const savedSender  = localStorage.getItem('ph_termii_sender')  || 'Protino';
+  const savedChannel = localStorage.getItem('ph_notify_channel') || 'auto';
+  const hasTermii    = !!savedKey;
+
+  content.innerHTML = `
+    <div class="modal-title">&#128276; Notification Settings</div>
+    <div class="modal-sub">Configure WhatsApp and SMS alerts for orders.</div>
+
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+
+      <!-- Admin number -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">&#128241; Admin WhatsApp Number</div>
+        <div class="input-group" style="margin-bottom:8px">
+          <label class="input-label">Your Number (receives all order alerts)</label>
+          <input class="text-input" id="wa-admin-phone" placeholder="2348012345678" value="${savedAdmin}" style="font-family:monospace" />
+          <div style="font-size:10px;color:var(--dim);margin-top:3px">Country code + number, no + or spaces</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="saveNotifySettings()" style="flex:1;background:var(--accent);color:#000;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Save</button>
+          <button onclick="testWhatsApp()" style="flex:1;background:transparent;color:var(--accent);border:1px solid rgba(232,255,58,0.3);border-radius:10px;padding:10px;font-weight:600;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Test WA</button>
+          <button onclick="testSMS()" style="flex:1;background:transparent;color:var(--orange);border:1px solid rgba(255,124,58,0.3);border-radius:10px;padding:10px;font-weight:600;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Test SMS</button>
+        </div>
+      </div>
+
+      <!-- Channel selector -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">&#128268; Notification Channel</div>
+        <div style="display:flex;flex-direction:column;gap:8px" id="channelOptions">
+          ${[
+            ['auto',          '&#128268; Auto (WhatsApp \u2192 SMS fallback)',  'Try WhatsApp first; if it fails, send SMS automatically'],
+            ['whatsapp_only', '&#128172; WhatsApp Only',                         'Only send via WhatsApp (Termii required for auto)'],
+            ['sms_only',      '&#128241; SMS Only',                              'Send plain SMS to all customers (works on any phone)'],
+            ['both',          '&#128172;&#128241; Both Channels',                'Send WhatsApp AND SMS every time'],
+          ].map(([val, label, desc]) => `
+            <label style="display:flex;align-items:flex-start;gap:10px;background:${savedChannel===val?'rgba(232,255,58,0.08)':'var(--surface)'};border:1px solid ${savedChannel===val?'rgba(232,255,58,0.3)':'var(--border)'};border-radius:10px;padding:12px;cursor:pointer">
+              <input type="radio" name="ch" value="${val}" ${savedChannel===val?'checked':''} style="margin-top:2px;accent-color:var(--accent)" onchange="previewChannel(this.value)" />
+              <div>
+                <div style="font-size:13px;font-weight:600;color:var(--text)">${label}</div>
+                <div style="font-size:11px;color:var(--dim);margin-top:2px">${desc}</div>
+              </div>
+            </label>`).join('')}
+        </div>
+      </div>
+
+      <!-- Termii API -->
+      <div style="background:rgba(58,184,255,0.06);border:1px solid rgba(58,184,255,0.2);border-radius:14px;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.08em;text-transform:uppercase">&#9889; Termii API (Auto-Send)</div>
+          <div style="font-size:10px;padding:2px 8px;border-radius:20px;background:${hasTermii?'rgba(58,255,184,0.1)':'rgba(255,124,58,0.1)'};color:${hasTermii?'var(--green)':'var(--orange)'};font-weight:700">
+            ${hasTermii ? 'CONNECTED' : 'NOT SET'}
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px">
+          Without Termii, customers must manually tap Send on WhatsApp. With Termii, messages fire silently &mdash; including SMS fallback for non-WhatsApp users.
+        </div>
+        <div class="input-group" style="margin-bottom:8px">
+          <label class="input-label">Termii API Key</label>
+          <input class="text-input" id="termii-key" placeholder="TL...your key" value="${savedKey}" type="password" style="font-family:monospace" />
+        </div>
+        <div class="input-group" style="margin-bottom:8px">
+          <label class="input-label">Sender Name (approved by Termii)</label>
+          <input class="text-input" id="termii-sender" placeholder="Protino" value="${savedSender}" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="saveNotifySettings()" style="flex:2;background:var(--blue);color:#000;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Save Termii Config</button>
+          <button onclick="testTermii()" style="flex:1;background:transparent;color:var(--blue);border:1px solid rgba(58,184,255,0.3);border-radius:10px;padding:10px;font-weight:600;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">Test</button>
+        </div>
+        <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:1.6">
+          &#128279; Sign up free at <span style="color:var(--blue)">termii.com</span> &middot; Get API key from Settings &gt; API Keys
+        </div>
+      </div>
+
+    </div>
+
+    <button onclick="closeAuth()" style="width:100%;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">
+      Done
+    </button>`;
+
+  modal.classList.add('open');
+}
+
+function previewChannel(val) {
+  // Just highlight selected option visually — already handled by onchange
+}
+
+function saveNotifySettings() {
+  const phone   = document.getElementById('wa-admin-phone')?.value.trim();
+  const key     = document.getElementById('termii-key')?.value.trim();
+  const sender  = document.getElementById('termii-sender')?.value.trim();
+  const channel = document.querySelector('input[name="ch"]:checked')?.value || 'auto';
+
+  if (phone) {
+    if (phone.length < 10) { showToast('Enter a valid phone number', 'error'); return; }
+    localStorage.setItem('ph_admin_phone', phone);
+    NOTIFY_CONFIG.adminPhone = phone;
+  }
+  if (key !== undefined)    { localStorage.setItem('ph_termii_key',     key);    NOTIFY_CONFIG.termiiKey    = key; }
+  if (sender)               { localStorage.setItem('ph_termii_sender',  sender); NOTIFY_CONFIG.termiiSender = sender; }
+  if (channel)              { localStorage.setItem('ph_notify_channel', channel); NOTIFY_CONFIG.channel     = channel; }
+
+  showToast('\u2705 Notification settings saved!', 'success');
+  closeAuth();
+}
+
+async function testTermii() {
+  if (!NOTIFY_CONFIG.termiiKey) { showToast('Add your Termii API key first', 'error'); return; }
+  showToast('Sending test via Termii...', 'success');
+  const res = await termiiSend(
+    NOTIFY_CONFIG.adminPhone,
+    'PROTINO HUB: Test message from Termii. Notifications are working!',
+    'generic'
+  );
+  showToast(res.ok ? '\u2705 Termii test sent!' : '\u274c Termii failed: ' + (res.reason||'check key'), res.ok ? 'success' : 'error');
+}
+
+function testWhatsApp() {
+  const demoMsg = buildAdminWhatsAppMsg({
+    id:'ORD-TEST', customer_name:'Amaka Obi', customer_phone:'2348012345678',
+    customer_email:'amaka@test.com', address:'15 Adeola Odeku, VI, Lagos',
+    total:12600, created_at:new Date().toISOString(),
+    items:[{emoji:'\ud83d\udc14',name:'Whole Chicken',qty:2},{emoji:'\ud83e\udd5a',name:'Eggs (30 crate)',qty:1}],
+  });
+  window.open(waLink(NOTIFY_CONFIG.adminPhone, demoMsg), '_blank');
+  showToast('\ud83d\udcf2 Opening WhatsApp test...', 'success');
+}
+
+function testSMS() {
+  const msg = 'PROTINO HUB: Test SMS. Your notification system is working correctly!';
+  window.location.href = `sms:+${normalisePhone(NOTIFY_CONFIG.adminPhone)}?body=${encodeURIComponent(msg)}`;
+  showToast('\ud83d\udcf1 Opening SMS test...', 'success');
+}
+
+function saveAdminPhone() { saveNotifySettings(); }
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  renderCategories();
+  renderProducts();
+  updateCartBadge();
+}
+
+init();
+</script>
+</body>
+</html>
