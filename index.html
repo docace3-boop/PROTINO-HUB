@@ -10,7 +10,6 @@
   <meta name="apple-mobile-web-app-title" content="Protino Hub" />
   <title>Protino Hub</title>
 
-  <!-- PWA Manifest inline -->
   <link rel="manifest" href="#" id="manifest-link" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -78,11 +77,13 @@
     }
 
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon { font-size: 26px; }
+    .logo-icon { font-size: 28px; }
     .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); letter-spacing: 0.05em; line-height: 1; }
     .logo-sub { font-size: 9px; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; }
 
-    .top-actions { display: flex; gap: 8px; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .menu-trigger { font-size: 22px; cursor: pointer; color: var(--text); padding: 4px; display: flex; align-items: center; }
+    
     .icon-btn {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -101,6 +102,33 @@
       display: flex; align-items: center; justify-content: center;
       font-family: 'DM Sans', sans-serif;
     }
+
+    /* ── Sidebar Nav Navigation Drawer ── */
+    .sidebar-overlay {
+      position: fixed; inset: 0; z-index: 150;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      display: none; opacity: 0; transition: opacity 0.25s ease;
+    }
+    .sidebar-overlay.open { display: block; opacity: 1; }
+    
+    .sidebar-drawer {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: 280px; background: var(--surface);
+      border-right: 1px solid var(--border); z-index: 160;
+      transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex; flex-direction: column; padding: 24px 16px;
+    }
+    .sidebar-overlay.open + .sidebar-drawer { transform: translateX(0); }
+    
+    .sidebar-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+    .sidebar-menu { display: flex; flex-direction: column; gap: 8px; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 14px; padding: 14px;
+      border-radius: 12px; color: var(--text); text-decoration: none;
+      font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s;
+    }
+    .sidebar-link:active { background: var(--surface2); }
+    .sidebar-link-icon { font-size: 18px; width: 24px; text-align: center; }
 
     /* ── Pages ── */
     .page { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); }
@@ -226,6 +254,13 @@
     .section-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
     .section-count { font-size: 12px; color: var(--muted); }
 
+    /* ── Slogan Accent ── */
+    .delivery-slogan {
+      background: rgba(58,255,184,0.06); border: 1px solid rgba(58,255,184,0.2);
+      color: var(--green); font-size: 12px; font-weight: 700; text-align: center;
+      padding: 10px; border-radius: 12px; margin: 0 16px 14px; letter-spacing: 0.05em;
+    }
+
     /* ── Cart Page ── */
     .cart-empty {
       flex: 1; display: flex; flex-direction: column;
@@ -274,7 +309,7 @@
     .checkout-btn:active { background: var(--accent-dim); }
 
     /* ── Checkout Page ── */
-    .checkout-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+    .checkout-wrap { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 16px; }
     .form-section {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 16px; padding: 18px;
@@ -296,6 +331,26 @@
     }
     .text-input:focus { border-color: var(--accent); }
 
+    /* ── Payment Options Gateway CSS ── */
+    .pay-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .pay-method-card {
+      border: 1px solid var(--border); background: var(--surface2);
+      border-radius: 12px; padding: 14px; display: flex; align-items: center;
+      gap: 12px; cursor: pointer; transition: all 0.15s;
+    }
+    .pay-method-card.selected { border-color: var(--accent); background: rgba(232,255,58,0.04); }
+    .pay-radio { width: 16px; height: 16px; accent-color: var(--accent); }
+    .pay-info { display: flex; flex-direction: column; }
+    .pay-lbl { font-size: 13px; font-weight: 600; color: var(--text); }
+    .pay-sublbl { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    .bank-details-box {
+      background: rgba(242,239,233,0.03); border: 1px dashed var(--border);
+      border-radius: 12px; padding: 14px; margin-top: 8px; display: none;
+    }
+    .bank-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
+    .bank-copy-btn { background: var(--surface2); border: 1px solid var(--border); font-size: 10px; color: var(--accent); padding: 2px 8px; border-radius: 6px; cursor: pointer; }
+
     .order-summary-item {
       display: flex; justify-content: space-between; align-items: center;
       padding: 8px 0; border-bottom: 1px solid var(--border);
@@ -309,15 +364,6 @@
     .order-summary-total span:first-child { font-size: 14px; font-weight: 600; }
     .order-summary-total span:last-child { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); }
 
-    .pay-btn {
-      width: 100%; background: #0BA4DB; color: #fff;
-      border: none; border-radius: 14px; padding: 16px;
-      font-weight: 700; font-size: 16px; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; display: flex;
-      align-items: center; justify-content: center; gap: 8px;
-      transition: opacity 0.15s;
-    }
-    .pay-btn:active { opacity: 0.85; }
     .demo-pay-btn {
       width: 100%; background: var(--accent); color: #000;
       border: none; border-radius: 14px; padding: 16px;
@@ -329,7 +375,7 @@
     .orders-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; }
     .order-card {
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 16px;
+      border-radius: 16px; padding: 16px; cursor: pointer; position: relative;
     }
     .order-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
     .order-id { font-size: 14px; font-weight: 700; }
@@ -346,6 +392,7 @@
     .order-card-footer { display: flex; justify-content: space-between; align-items: center; }
     .order-addr { font-size: 11px; color: var(--dim); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .order-total { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); }
+    .status-sim-hint { font-size: 9px; color: var(--accent); font-weight: 500; text-align: right; margin-top: 6px; display: block; opacity: 0.7; }
 
     /* ── Profile Page ── */
     .profile-wrap { padding: 24px 16px; }
@@ -518,23 +565,18 @@
     .product-card:nth-child(4) { animation-delay: 0.2s; }
     .product-card:nth-child(5) { animation-delay: 0.25s; }
     .product-card:nth-child(6) { animation-delay: 0.3s; }
-
-    /* ── Pull-to-refresh indicator ── */
-    .ptr { text-align: center; padding: 16px; font-size: 12px; color: var(--dim); display: none; }
   </style>
 </head>
 <body>
 
 <div id="app">
 
-  <!-- Offline Banner -->
   <div class="offline-banner" id="offlineBanner">
     📡 You're offline — showing cached products
   </div>
 
-  <!-- Install Banner -->
   <div class="install-banner" id="installBanner">
-    <span style="font-size:24px">🥩</span>
+    <span style="font-size:24px">🐓</span>
     <div class="install-banner-text">
       <strong>Add to Home Screen</strong><br/>
       Install Protino Hub for faster ordering
@@ -543,10 +585,38 @@
     <button class="install-close" id="installClose">✕</button>
   </div>
 
-  <!-- Top Bar -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+  <div class="sidebar-drawer" id="sidebarDrawer">
+    <div class="sidebar-hdr">
+      <div class="logo">
+        <span class="logo-icon">🐓</span>
+        <div>
+          <div class="logo-text">Protino</div>
+          <div class="logo-sub">Hub Menu</div>
+        </div>
+      </div>
+      <span style="cursor:pointer; font-size: 20px;" onclick="toggleSidebar(false)">✕</span>
+    </div>
+    <div class="sidebar-menu">
+      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('home')">
+        <span class="sidebar-link-icon">🏠</span><span class="sidebar-link-text">Home Shop</span>
+      </div>
+      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('profile')">
+        <span class="sidebar-link-icon">👤</span><span class="sidebar-link-text">Profile Setup</span>
+      </div>
+      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('orders')">
+        <span class="sidebar-link-icon">📦</span><span class="sidebar-link-text">Order History</span>
+      </div>
+      <div class="sidebar-link" onclick="toggleSidebar(false); openWaSetup()">
+        <span class="sidebar-link-icon">&#128172;</span><span class="sidebar-link-text">Alert Configurations</span>
+      </div>
+    </div>
+  </div>
+
   <div class="top-bar">
     <div class="logo">
-      <span class="logo-icon">🥩</span>
+      <span class="menu-trigger" onclick="toggleSidebar(true)">☰</span>
+      <span class="logo-icon">🐓</span>
       <div>
         <div class="logo-text">Protino</div>
         <div class="logo-sub">Hub</div>
@@ -561,10 +631,8 @@
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- ── HOME PAGE ── -->
   <div class="page active" id="page-home">
     <div class="hero">
       <div class="hero-eyebrow">🔥 Farm Fresh · Daily Delivery</div>
@@ -591,7 +659,6 @@
     <div style="height:8px"></div>
   </div>
 
-  <!-- ── CART PAGE ── -->
   <div class="page" id="page-cart">
     <div class="section-hdr">
       <span class="section-title">Your Cart</span>
@@ -599,11 +666,13 @@
     <div id="cartContent"></div>
   </div>
 
-  <!-- ── CHECKOUT PAGE ── -->
   <div class="page" id="page-checkout">
     <div class="section-hdr">
       <span class="section-title">Checkout</span>
     </div>
+    
+    <div class="delivery-slogan">⚡ WE DELIVER FAST AT YOUR DOOR STEP! ⚡</div>
+
     <div class="checkout-wrap">
       <div class="form-section">
         <div class="form-title">Delivery Details</div>
@@ -627,18 +696,50 @@
         </div>
       </div>
 
+      <div class="form-section">
+        <div class="form-title">Select Payment Choice</div>
+        <div class="pay-methods">
+          <div class="pay-method-card selected" id="method-pod" onclick="selectPaymentMethod('pod')">
+            <input type="radio" name="pay_choice" id="radio-pod" class="pay-radio" checked />
+            <div class="pay-info">
+              <span class="pay-lbl">Pay on Delivery (POD)</span>
+              <span class="pay-sublbl">Pay with Cash/POS when your item arrives</span>
+            </div>
+          </div>
+          <div class="pay-method-card" id="method-transfer" onclick="selectPaymentMethod('transfer')">
+            <input type="radio" name="pay_choice" id="radio-transfer" class="pay-radio" />
+            <div class="pay-info">
+              <span class="pay-lbl">Direct Bank Transfer</span>
+              <span class="pay-sublbl">Pay securely before setup via OPay / Moniepoint</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bank-details-box" id="bankDetailsBox">
+          <div style="font-size:11px; font-weight:700; color:var(--accent); margin-bottom:6px; text-transform:uppercase;">Transfer Accounts:</div>
+          <div class="bank-row">
+            <span><b>OPay:</b> 9012345678 (Protino Hub)</span>
+            <button class="bank-copy-btn" onclick="copyText('9012345678', 'OPay account copied!')">Copy</button>
+          </div>
+          <div class="bank-row">
+            <span><b>Moniepoint:</b> 5012345678 (Protino Hub)</span>
+            <button class="bank-copy-btn" onclick="copyText('5012345678', 'Moniepoint account copied!')">Copy</button>
+          </div>
+          <p style="font-size:10px; color:var(--muted); margin-top:6px; line-height:1.3;">⚠️ Please send proof of transfer description via WhatsApp chat confirmation links.</p>
+        </div>
+      </div>
+
       <div class="form-section" id="checkoutSummary"></div>
 
       <button class="demo-pay-btn" id="placeOrderBtn" onclick="placeOrder()">
         🎯 Place Order
       </button>
       <p style="text-align:center;font-size:11px;color:var(--dim);margin-top:8px">
-        Demo mode · No real payment · Connect Paystack for live orders
+        Protino Delivery Logic · Tap to select options
       </p>
     </div>
   </div>
 
-  <!-- ── ORDERS PAGE ── -->
   <div class="page" id="page-orders">
     <div class="section-hdr">
       <span class="section-title">My Orders</span>
@@ -646,12 +747,10 @@
     <div class="orders-wrap" id="ordersWrap"></div>
   </div>
 
-  <!-- ── PROFILE PAGE ── -->
   <div class="page" id="page-profile">
     <div class="profile-wrap" id="profileWrap"></div>
   </div>
 
-  <!-- ── AUTH MODAL ── -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-sheet">
       <div class="modal-handle"></div>
@@ -660,7 +759,6 @@
     </div>
   </div>
 
-  <!-- ── BOTTOM NAV ── -->
   <nav class="bottom-nav">
     <div class="nav-item active" id="nav-home" onclick="navigate('home')">
       <span class="nav-icon">🏠</span>
@@ -693,26 +791,26 @@ const STATE = {
   user: JSON.parse(localStorage.getItem('ph_user') || 'null'),
   cart: JSON.parse(localStorage.getItem('ph_cart') || '[]'),
   orders: JSON.parse(localStorage.getItem('ph_orders') || '[]'),
+  selectedPaymentMethod: 'pod',
   qtys: {},
   currentPage: 'home',
   currentCat: 'All',
 };
 
+// Custom requested pricing structure updates
 const PRODUCTS = [
-  { id:1, category:"Poultry", name:"Whole Chicken",    price:4500, unit:"per kg",    emoji:"🐔", badge:"bestseller", description:"Farm-raised, hormone-free", stock:50 },
-  { id:2, category:"Poultry", name:"Turkey (Whole)",   price:8500, unit:"per kg",    emoji:"🦃", badge:"premium",    description:"Juicy free-range turkey", stock:20 },
+  { id:1, category:"Poultry", name:"Whole Chicken",    price:5500, unit:"per kg",    emoji:"🐔", badge:"bestseller", description:"Farm-raised, hormone-free", stock:50 },
+  { id:2, category:"Poultry", name:"Turkey (Whole)",   price:10500, unit:"per kg",    emoji:"🦃", badge:"premium",    description:"Juicy free-range turkey", stock:20 },
   { id:3, category:"Beef",    name:"Beef Brisket",     price:6500, unit:"per kg",    emoji:"🥩", badge:"popular",    description:"Tender marbled brisket cut", stock:35 },
   { id:4, category:"Beef",    name:"Assorted Beef",    price:5800, unit:"per kg",    emoji:"🍖", badge:null,          description:"Shaki, ponmo & roundabout", stock:40 },
   { id:5, category:"Pork",    name:"Pork Ribs",        price:5200, unit:"per kg",    emoji:"🥓", badge:"new",         description:"Fall-off-the-bone smoky ribs", stock:25 },
   { id:6, category:"Pork",    name:"Pork Belly",       price:4800, unit:"per kg",    emoji:"🐷", badge:null,          description:"Rich layered, great for grilling", stock:30 },
-  { id:7, category:"Fish",    name:"Titus Mackerel",   price:3200, unit:"per kg",    emoji:"🐟", badge:"bestseller", description:"Great for pepper soup", stock:60 },
-  { id:8, category:"Fish",    name:"Catfish",          price:3800, unit:"per kg",    emoji:"🐠", badge:"popular",    description:"Fresh river catfish, cleaned", stock:45 },
+  { id:7, category:"Fish",    name:"Catfish Premium",  price:3500, unit:"per kg",    emoji:"🐟", badge:"fresh",      description:"Fresh local pond catfish, cleaned", stock:60 },
   { id:9, category:"Eggs",    name:"Eggs (30 crate)",  price:3600, unit:"per crate", emoji:"🥚", badge:"value",       description:"Farm-fresh brown eggs", stock:80 },
-  { id:10,category:"Eggs",    name:"Quail Eggs (50)",  price:2800, unit:"per pack",  emoji:"🫙", badge:"new",         description:"Nutritious quail eggs", stock:40 },
 ];
 
 const BADGE_COLORS = {
-  bestseller:"#e8ff3a", premium:"#ffd700", popular:"#ff6b35", new:"#3affb8", value:"#3ab8ff"
+  bestseller:"#e8ff3a", premium:"#ffd700", popular:"#ff6b35", new:"#3affb8", value:"#3ab8ff", fresh: "#3affb8"
 };
 const STATUS_STYLES = {
   pending:   {bg:"rgba(255,154,0,0.1)",   color:"#ff9a00"},
@@ -720,6 +818,43 @@ const STATUS_STYLES = {
   delivered: {bg:"rgba(58,255,184,0.1)",  color:"#3affb8"},
   cancelled: {bg:"rgba(255,74,110,0.1)",  color:"#ff4a6e"},
 };
+
+// ============================================================
+// SIDEBAR CONTROL
+// ============================================================
+function toggleSidebar(open) {
+  const overlay = document.getElementById('sidebarOverlay');
+  if (open) {
+    overlay.classList.add('open');
+  } else {
+    overlay.classList.remove('open');
+  }
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function copyText(str, successMsg) {
+  navigator.clipboard.writeText(str).then(() => {
+    showToast(successMsg, 'success');
+  });
+}
+
+function selectPaymentMethod(method) {
+  STATE.selectedPaymentMethod = method;
+  document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('selected'));
+  document.getElementsByName('pay_choice').forEach(r => r.checked = false);
+  
+  document.getElementById(`method-${method}`).classList.add('selected');
+  document.getElementById(`radio-${method}`).checked = true;
+
+  const detailsBox = document.getElementById('bankDetailsBox');
+  if (method === 'transfer') {
+    detailsBox.style.display = 'block';
+  } else {
+    detailsBox.style.display = 'none';
+  }
+}
 
 // ============================================================
 // PERSIST
@@ -783,6 +918,31 @@ function selectCat(cat) {
 }
 
 function getQty(id) { return STATE.qtys[id] || 1; }
+
+// ============================================================
+// STATUS ORDER PROGRESS SIMULATOR 
+// ============================================================
+function cycleOrderStatus(orderId) {
+  const orderIndex = STATE.orders.findIndex(o => o.id === orderId);
+  if (orderIndex === -1) return;
+  
+  const o = STATE.orders[orderIndex];
+  let previous = o.status;
+  
+  if (o.status === 'pending') o.status = 'confirmed';
+  else if (o.status === 'confirmed') o.status = 'delivered';
+  else if (o.status === 'delivered') o.status = 'pending';
+  
+  save();
+  renderOrders();
+  
+  // Trigger system notification prompt payload
+  showToast(`Status updated to: ${o.status.toUpperCase()}`, 'success');
+  
+  // Simulate WhatsApp dispatch alerts
+  let alertMsg = `PROTINO STATUS ALERT: Order ${o.id} status changed from ${previous} to ${o.status}!`;
+  console.log(`[Notification Engine API Dispatch] to ${o.customer_phone}: ${alertMsg}`);
+}
 
 function changeQty(id, delta) {
   STATE.qtys[id] = Math.max(1, (STATE.qtys[id] || 1) + delta);
@@ -923,7 +1083,6 @@ function renderCheckoutSummary() {
       <span>₦${cartTotal().toLocaleString()}</span>
     </div>`;
 
-  // Pre-fill if logged in
   if (STATE.user) {
     document.getElementById('inp-name').value = STATE.user.name || '';
     document.getElementById('inp-email').value = STATE.user.email || '';
@@ -949,6 +1108,7 @@ function placeOrder() {
     customer_email: email,
     customer_phone: phone,
     address,
+    payment_choice: STATE.selectedPaymentMethod,
     total: cartTotal(),
     status: 'pending',
     created_at: new Date().toISOString(),
@@ -960,11 +1120,9 @@ function placeOrder() {
   save();
   updateCartBadge();
 
-  // Fire notifications (WhatsApp + SMS fallback)
   sendOrderNotifications(order).then(result => {
     showOrderConfirmModal(order, result);
   });
-
 }
 
 // ============================================================
@@ -985,7 +1143,7 @@ function renderOrders() {
   el.innerHTML = STATE.orders.map(o => {
     const sc = STATUS_STYLES[o.status] || STATUS_STYLES.pending;
     return `
-      <div class="order-card">
+      <div class="order-card" onclick="cycleOrderStatus('${o.id}')">
         <div class="order-card-header">
           <div>
             <div class="order-id">${o.id}</div>
@@ -1000,6 +1158,7 @@ function renderOrders() {
           <div class="order-addr">📍 ${o.address || 'Lagos, Nigeria'}</div>
           <div class="order-total">₦${o.total.toLocaleString()}</div>
         </div>
+        <span class="status-sim-hint">💡 Tap card to cycle tracking status dynamically</span>
       </div>`;
   }).join('');
 }
@@ -1068,36 +1227,12 @@ function renderProfile() {
         </div>
         <span class="menu-arrow">›</span>
       </div>
-      <div class="menu-item" onclick="showToast('Notifications coming soon!', 'success')">
-        <div class="menu-item-left">
-          <span class="menu-item-icon">🔔</span>
-          <div>
-            <div class="menu-item-text">Notifications</div>
-            <div class="menu-item-sub">Order updates & promotions</div>
-          </div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </div>
       <div class="menu-item" onclick="openWaSetup()">
         <div class="menu-item-left">
           <span class="menu-item-icon">&#128172;</span>
           <div>
             <div class="menu-item-text">WhatsApp Alerts</div>
             <div class="menu-item-sub">Configure order notifications</div>
-          </div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </div>
-    </div>
-
-    <div class="menu-section">
-      <div class="menu-title">Support</div>
-      <div class="menu-item" onclick="showToast('📞 Call us: 0800-PROTINO', 'success')">
-        <div class="menu-item-left">
-          <span class="menu-item-icon">📞</span>
-          <div>
-            <div class="menu-item-text">Contact Support</div>
-            <div class="menu-item-sub">0800-PROTINO · 8am–8pm daily</div>
           </div>
         </div>
         <span class="menu-arrow">›</span>
@@ -1132,11 +1267,10 @@ function openAuth(mode) {
       <button class="auth-btn" onclick="doLogin()">Sign In →</button>
       <div class="auth-switch">
         Don't have an account? <span class="auth-link" onclick="openAuth('signup')">Create one</span>
-      </div>
-      <div class="auth-tip">💡 Use admin@protino.ng for admin demo</div>`;
+      </div>`;
   } else {
     content.innerHTML = `
-      <div class="modal-title">Join Protino Hub 🥩</div>
+      <div class="modal-title">Join Protino Hub 🐓</div>
       <div class="modal-sub">Create your account and start ordering fresh proteins</div>
       <div class="form-row">
         <div class="input-group">
@@ -1161,7 +1295,6 @@ function openAuth(mode) {
         Already have an account? <span class="auth-link" onclick="openAuth('login')">Sign in</span>
       </div>`;
   }
-
   modal.classList.add('open');
 }
 
@@ -1183,7 +1316,6 @@ function doLogin() {
   const email = document.getElementById('auth-email')?.value.trim();
   const pw = document.getElementById('auth-pw')?.value;
   if (!email || !pw) { showAuthError('Please enter email and password'); return; }
-  // Demo auth
   const user = {
     id: 'demo-' + Date.now(),
     email,
@@ -1233,472 +1365,118 @@ const MANIFEST = {
   theme_color: "#0c0c0c",
   orientation: "portrait",
   icons: [
-    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230c0c0c' rx='32'/><text y='130' x='96' font-size='110' text-anchor='middle'>🥩</text></svg>", sizes: "192x192", type: "image/svg+xml" },
-    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230c0c0c' rx='80'/><text y='360' x='256' font-size='300' text-anchor='middle'>🥩</text></svg>", sizes: "512x512", type: "image/svg+xml" }
-  ],
-  categories: ["food", "shopping"],
-  shortcuts: [
-    { name: "Order Now", url: "/?page=home", description: "Browse and order fresh proteins" },
-    { name: "My Orders", url: "/?page=orders", description: "Track your deliveries" }
+    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230c0c0c' rx='32'/><text y='130' x='96' font-size='110' text-anchor='middle'>🐓</text></svg>", sizes: "192x192", type: "image/svg+xml" }
   ]
 };
 
-// Inject manifest as blob URL
 const manifestBlob = new Blob([JSON.stringify(MANIFEST)], { type: 'application/manifest+json' });
 document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
 
-// Service Worker
-const SW_CODE = `
-const CACHE = 'protino-v1';
-const ASSETS = ['/'];
-
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
-        return res;
-      })
-      .catch(() => caches.match(e.request))
-  );
-});
-
-self.addEventListener('push', e => {
-  const data = e.data?.json() || { title: 'Protino Hub', body: 'Your order update is ready!' };
-  e.waitUntil(self.registration.showNotification(data.title, {
-    body: data.body, icon: '/icon-192.png', badge: '/badge.png',
-    vibrate: [200, 100, 200], tag: 'protino-order'
-  }));
-});
-`;
-
-if ('serviceWorker' in navigator) {
-  const swBlob = new Blob([SW_CODE], { type: 'application/javascript' });
-  const swUrl = URL.createObjectURL(swBlob);
-  navigator.serviceWorker.register(swUrl, { scope: '/' })
-    .then(() => console.log('✅ Service Worker registered'))
-    .catch(e => console.log('SW error:', e));
-}
-
-// ── Install prompt ──────────────────────────────────────────
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if (!localStorage.getItem('ph_install_dismissed')) {
-    document.getElementById('installBanner').classList.add('show');
-  }
-});
-
-document.getElementById('installBtn').onclick = async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const { outcome } = await deferredPrompt.userChoice;
-  if (outcome === 'accepted') showToast('✅ Protino Hub installed!', 'success');
-  deferredPrompt = null;
-  document.getElementById('installBanner').classList.remove('show');
-};
-
-document.getElementById('installClose').onclick = () => {
-  localStorage.setItem('ph_install_dismissed', '1');
-  document.getElementById('installBanner').classList.remove('show');
-};
-
-// ── Offline detection ────────────────────────────────────────
-function updateOnlineStatus() {
-  const banner = document.getElementById('offlineBanner');
-  if (!navigator.onLine) banner.classList.add('show');
-  else banner.classList.remove('show');
-}
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-updateOnlineStatus();
-
 // ============================================================
-// NOTIFICATIONS — WhatsApp + SMS Fallback (Termii)
+// NOTIFICATIONS — WhatsApp + SMS Config
 // ============================================================
 const NOTIFY_CONFIG = {
   adminPhone:   localStorage.getItem('ph_admin_phone')   || '2348012345678',
   termiiKey:    localStorage.getItem('ph_termii_key')    || '',
   termiiSender: localStorage.getItem('ph_termii_sender') || 'Protino',
-  // channels: 'auto' | 'whatsapp_only' | 'sms_only' | 'both'
   channel:      localStorage.getItem('ph_notify_channel') || 'auto',
 };
 
-// ── Message builders ─────────────────────────────────────────
 function buildWhatsAppMsg(order) {
-  const lines = order.items.map(i =>
-    `  \u2022 ${i.emoji} ${i.name} \u00d7${i.qty} \u2014 \u20a6${(i.price*i.qty).toLocaleString()}`
-  ).join('\n');
+  const lines = order.items.map(i => `  • ${i.emoji} ${i.name} ×${i.qty}`).join('\n');
   return (
-    `\ud83e\udd69 *PROTINO HUB \u2014 Order Confirmed!*\n\n` +
-    `Hi ${order.customer_name} \ud83d\udc4b\n\n` +
-    `Your order *${order.id}* is confirmed and being prepared.\n\n` +
-    `*\ud83d\udce6 Items:*\n${lines}\n\n` +
-    `*\ud83d\udcb0 Total: \u20a6${order.total.toLocaleString()}*\n` +
-    `*\ud83d\udccd Address:* ${order.address}\n\n` +
-    `*\u23f1 ETA:* 1\u20132 hours\n\n` +
-    `_Reply or call 0800-PROTINO for support_`
-  );
-}
-
-function buildSMSMsg(order) {
-  // SMS: plain text, no markdown, under 160 chars per segment
-  const items = order.items.map(i => `${i.name}x${i.qty}`).join(', ');
-  return (
-    `PROTINO HUB: Hi ${order.customer_name}, Order ${order.id} confirmed! ` +
-    `Items: ${items}. Total: N${order.total.toLocaleString()}. ` +
-    `Delivery: ${order.address}. ETA 1-2hrs. Call 0800-PROTINO for help.`
+    `🐓 *PROTINO HUB — Order Received!*\n\n` +
+    `Hi ${order.customer_name},\n` +
+    `Your order *${order.id}* has been logged via *${order.payment_choice.toUpperCase()}*.\n\n` +
+    `⚡ *WE DELIVER FAST AT YOUR DOOR STEP!*\n\n` +
+    `*Items:*\n${lines}\n\n` +
+    `*Total:* ₦${order.total.toLocaleString()}\n` +
+    `*Address:* ${order.address}\n\n` +
+    `_Our team will dispatch your item within 1-2 hours._`
   );
 }
 
 function buildAdminWhatsAppMsg(order) {
-  const lines = order.items.map(i => `  \u2022 ${i.emoji} ${i.name} \u00d7${i.qty}`).join('\n');
-  return (
-    `\ud83d\udd14 *NEW ORDER \u2014 PROTINO HUB*\n\n` +
-    `*ID:* ${order.id}\n` +
-    `*Time:* ${new Date(order.created_at).toLocaleString('en-NG')}\n\n` +
-    `*\ud83d\udc64 Customer:*\n` +
-    `  ${order.customer_name} | ${order.customer_phone}\n` +
-    `  ${order.customer_email}\n\n` +
-    `*\ud83d\udce6 Items:*\n${lines}\n\n` +
-    `*\ud83d\udcb0 Total: \u20a6${order.total.toLocaleString()}*\n\n` +
-    `*\ud83d\udccd Deliver to:*\n${order.address}\n\n` +
-    `_Confirm order in Protino Hub admin panel._`
-  );
+  return `📢 *NEW PROTINO ORDER: ${order.id}*\n\nCustomer: ${order.customer_name}\nPhone: ${order.customer_phone}\nPay Option: ${order.payment_choice.toUpperCase()}\nTotal: ₦${order.total.toLocaleString()}\nAddress: ${order.address}`;
 }
 
-function buildAdminSMSMsg(order) {
-  const items = order.items.map(i => `${i.name}x${i.qty}`).join(', ');
-  return (
-    `PROTINO NEW ORDER ${order.id}: ${order.customer_name} (${order.customer_phone}). ` +
-    `${items}. Total: N${order.total.toLocaleString()}. ` +
-    `Deliver: ${order.address}`
-  );
-}
+function normalisePhone(phone) { return phone.replace(/\D/g,'').replace(/^0/,'234'); }
+function waLink(phone, message) { return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`; }
 
-// ── Helpers ──────────────────────────────────────────────────
-function normalisePhone(phone) {
-  return phone.replace(/\D/g,'').replace(/^0/,'234');
-}
-
-function waLink(phone, message) {
-  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-}
-
-// ── Termii API sender ────────────────────────────────────────
-async function termiiSend(phone, message, channel = 'whatsapp') {
-  // channel: 'whatsapp' | 'generic' (SMS)
-  if (!NOTIFY_CONFIG.termiiKey) return { ok: false, reason: 'no_key' };
-  try {
-    const res = await fetch('https://api.ng.termii.com/api/sms/send', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to:        phone,
-        from:      NOTIFY_CONFIG.termiiSender,
-        sms:       message,
-        type:      'plain',
-        channel:   channel,   // 'whatsapp' or 'generic'
-        api_key:   NOTIFY_CONFIG.termiiKey,
-      }),
-    });
-    const data = await res.json();
-    return { ok: res.ok, data };
-  } catch (e) {
-    return { ok: false, reason: 'network_error', error: e.message };
-  }
-}
-
-// ── Smart dispatch with fallback logic ───────────────────────
 async function sendOrderNotifications(order) {
   const custPhone  = normalisePhone(order.customer_phone);
   const adminPhone = normalisePhone(NOTIFY_CONFIG.adminPhone);
-  const hasTermii  = !!NOTIFY_CONFIG.termiiKey;
-  const ch         = NOTIFY_CONFIG.channel;
-
-  const result = {
+  return {
     customerWaUrl:  waLink(custPhone,  buildWhatsAppMsg(order)),
     adminWaUrl:     waLink(adminPhone, buildAdminWhatsAppMsg(order)),
     termiiResults:  [],
     autoSent:       false,
   };
-
-  // ── Auto mode: try WhatsApp via Termii, fallback to SMS ──
-  if (hasTermii && (ch === 'auto' || ch === 'whatsapp_only' || ch === 'both')) {
-    const waRes = await termiiSend(custPhone, buildWhatsAppMsg(order), 'whatsapp');
-    result.termiiResults.push({ channel:'WhatsApp', target:'customer', ...waRes });
-
-    if (!waRes.ok && ch === 'auto') {
-      // Fallback: send SMS instead
-      const smsRes = await termiiSend(custPhone, buildSMSMsg(order), 'generic');
-      result.termiiResults.push({ channel:'SMS (fallback)', target:'customer', ...smsRes });
-    }
-
-    // Admin WhatsApp alert
-    const adminRes = await termiiSend(adminPhone, buildAdminWhatsAppMsg(order), 'whatsapp');
-    result.termiiResults.push({ channel:'WhatsApp', target:'admin', ...adminRes });
-    result.autoSent = waRes.ok || result.termiiResults.some(r => r.ok);
-  }
-
-  if (hasTermii && (ch === 'sms_only' || ch === 'both')) {
-    const smsRes  = await termiiSend(custPhone,  buildSMSMsg(order),      'generic');
-    const adminSm = await termiiSend(adminPhone, buildAdminSMSMsg(order), 'generic');
-    result.termiiResults.push(
-      { channel:'SMS', target:'customer', ...smsRes },
-      { channel:'SMS', target:'admin',    ...adminSm }
-    );
-    result.autoSent = result.autoSent || smsRes.ok;
-  }
-
-  return result;
 }
 
-// ── Order confirm modal ──────────────────────────────────────
 function showOrderConfirmModal(order, result) {
   const modal   = document.getElementById('authModal');
   const content = document.getElementById('authContent');
   document.getElementById('authError').style.display = 'none';
 
-  const autoSent   = result.autoSent;
-  const hasTermii  = !!NOTIFY_CONFIG.termiiKey;
-
-  // Build termii status rows
-  let termiiRows = '';
-  if (result.termiiResults.length > 0) {
-    termiiRows = result.termiiResults.map(r => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
-        <span style="color:var(--muted)">${r.channel} \u2192 ${r.target}</span>
-        <span style="color:${r.ok ? 'var(--green)' : 'var(--red)'}">
-          ${r.ok ? '\u2705 Sent' : '\u274c Failed' + (r.reason ? ` (${r.reason})` : '')}
-        </span>
-      </div>`).join('');
-  }
-
   content.innerHTML = `
     <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:52px;margin-bottom:10px">&#127881;</div>
+      <div style="font-size:52px;margin-bottom:10px">🎉</div>
       <div class="modal-title" style="text-align:center">Order Placed!</div>
+      <div class="modal-sub" style="text-align:center; color:var(--green); font-weight:700;">
+        WE DELIVER FAST AT YOUR DOOR STEP!
+      </div>
       <div class="modal-sub" style="text-align:center">
-        <b style="color:var(--accent)">${order.id}</b> &mdash; &#8358;${order.total.toLocaleString()}
+        ID: <b style="color:var(--accent)">${order.id}</b> — ₦${order.total.toLocaleString()}
       </div>
     </div>
 
-    ${autoSent ? `
-    <div style="background:rgba(58,255,184,0.08);border:1px solid rgba(58,255,184,0.25);border-radius:12px;padding:14px;margin-bottom:14px;text-align:center">
-      <div style="font-size:20px;margin-bottom:6px">&#9989;</div>
-      <div style="font-size:13px;color:var(--green);font-weight:600">Notifications sent automatically!</div>
-      <div style="font-size:11px;color:var(--dim);margin-top:4px">Customer &amp; admin alerted via Termii</div>
-      ${termiiRows ? `<div style="margin-top:10px">${termiiRows}</div>` : ''}
-    </div>` : `
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
-      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:2px">
-        ${hasTermii ? '&#9888;&#65039; Auto-send failed &mdash; use manual buttons below' : 'Tap to send WhatsApp notifications'}
-      </div>
       <a href="${result.customerWaUrl}" target="_blank" style="text-decoration:none">
         <div style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
-          <div style="font-size:26px">&#128172;</div>
+          <div style="font-size:26px">💬</div>
           <div style="flex:1">
-            <div style="font-size:13px;font-weight:700;color:#25D366">WhatsApp Customer</div>
-            <div style="font-size:11px;color:var(--muted)">Confirmation to ${order.customer_name}</div>
+            <div style="font-size:13px;font-weight:700;color:#25D366">Confirm on WhatsApp</div>
+            <div style="font-size:11px;color:var(--muted)">Send receipt info directly to customer</div>
           </div>
-          <div style="font-size:16px;color:var(--dim)">&#8250;</div>
         </div>
       </a>
-      <a href="${result.adminWaUrl}" target="_blank" style="text-decoration:none">
-        <div style="background:rgba(58,255,184,0.06);border:1px solid rgba(58,255,184,0.2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
-          <div style="font-size:26px">&#128276;</div>
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:700;color:var(--green)">WhatsApp Admin</div>
-            <div style="font-size:11px;color:var(--muted)">New order alert to kitchen team</div>
-          </div>
-          <div style="font-size:16px;color:var(--dim)">&#8250;</div>
-        </div>
-      </a>
-      <div onclick="sendSMSFallback('${order.customer_phone}', '${encodeURIComponent(buildSMSMsg(order))}')"
-           style="background:rgba(232,255,58,0.06);border:1px solid rgba(232,255,58,0.2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
-        <div style="font-size:26px">&#128241;</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;color:var(--accent)">Send SMS Instead</div>
-          <div style="font-size:11px;color:var(--muted)">Opens device SMS for customers without WhatsApp</div>
-        </div>
-        <div style="font-size:16px;color:var(--dim)">&#8250;</div>
-      </div>
-    </div>`}
+    </div>
 
     <button onclick="closeAuth();navigate('orders');"
       style="width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:'DM Serif Display',serif">
-      View My Orders &#8594;
+      Track Order History →
     </button>`;
 
   modal.classList.add('open');
 }
 
-// ── SMS fallback via device SMS app ─────────────────────────
-function sendSMSFallback(phone, encodedMsg) {
-  const cleaned = normalisePhone(phone);
-  const msg = decodeURIComponent(encodedMsg);
-  // Opens native SMS app on mobile
-  window.location.href = `sms:+${cleaned}?body=${encodeURIComponent(msg)}`;
-  showToast('\ud83d\udcf1 Opening SMS app...', 'success');
-}
-
-// ── Notification Settings modal ──────────────────────────────
 function openWaSetup() {
   const modal   = document.getElementById('authModal');
   const content = document.getElementById('authContent');
   document.getElementById('authError').style.display = 'none';
 
-  const savedAdmin   = localStorage.getItem('ph_admin_phone')    || '';
-  const savedKey     = localStorage.getItem('ph_termii_key')     || '';
-  const savedSender  = localStorage.getItem('ph_termii_sender')  || 'Protino';
-  const savedChannel = localStorage.getItem('ph_notify_channel') || 'auto';
-  const hasTermii    = !!savedKey;
-
   content.innerHTML = `
-    <div class="modal-title">&#128276; Notification Settings</div>
-    <div class="modal-sub">Configure WhatsApp and SMS alerts for orders.</div>
-
-    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
-
-      <!-- Admin number -->
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px">
-        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">&#128241; Admin WhatsApp Number</div>
-        <div class="input-group" style="margin-bottom:8px">
-          <label class="input-label">Your Number (receives all order alerts)</label>
-          <input class="text-input" id="wa-admin-phone" placeholder="2348012345678" value="${savedAdmin}" style="font-family:monospace" />
-          <div style="font-size:10px;color:var(--dim);margin-top:3px">Country code + number, no + or spaces</div>
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="saveNotifySettings()" style="flex:1;background:var(--accent);color:#000;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Save</button>
-          <button onclick="testWhatsApp()" style="flex:1;background:transparent;color:var(--accent);border:1px solid rgba(232,255,58,0.3);border-radius:10px;padding:10px;font-weight:600;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Test WA</button>
-          <button onclick="testSMS()" style="flex:1;background:transparent;color:var(--orange);border:1px solid rgba(255,124,58,0.3);border-radius:10px;padding:10px;font-weight:600;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Test SMS</button>
-        </div>
-      </div>
-
-      <!-- Channel selector -->
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px">
-        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px">&#128268; Notification Channel</div>
-        <div style="display:flex;flex-direction:column;gap:8px" id="channelOptions">
-          ${[
-            ['auto',          '&#128268; Auto (WhatsApp \u2192 SMS fallback)',  'Try WhatsApp first; if it fails, send SMS automatically'],
-            ['whatsapp_only', '&#128172; WhatsApp Only',                         'Only send via WhatsApp (Termii required for auto)'],
-            ['sms_only',      '&#128241; SMS Only',                              'Send plain SMS to all customers (works on any phone)'],
-            ['both',          '&#128172;&#128241; Both Channels',                'Send WhatsApp AND SMS every time'],
-          ].map(([val, label, desc]) => `
-            <label style="display:flex;align-items:flex-start;gap:10px;background:${savedChannel===val?'rgba(232,255,58,0.08)':'var(--surface)'};border:1px solid ${savedChannel===val?'rgba(232,255,58,0.3)':'var(--border)'};border-radius:10px;padding:12px;cursor:pointer">
-              <input type="radio" name="ch" value="${val}" ${savedChannel===val?'checked':''} style="margin-top:2px;accent-color:var(--accent)" onchange="previewChannel(this.value)" />
-              <div>
-                <div style="font-size:13px;font-weight:600;color:var(--text)">${label}</div>
-                <div style="font-size:11px;color:var(--dim);margin-top:2px">${desc}</div>
-              </div>
-            </label>`).join('')}
-        </div>
-      </div>
-
-      <!-- Termii API -->
-      <div style="background:rgba(58,184,255,0.06);border:1px solid rgba(58,184,255,0.2);border-radius:14px;padding:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <div style="font-size:11px;font-weight:700;color:var(--blue);letter-spacing:0.08em;text-transform:uppercase">&#9889; Termii API (Auto-Send)</div>
-          <div style="font-size:10px;padding:2px 8px;border-radius:20px;background:${hasTermii?'rgba(58,255,184,0.1)':'rgba(255,124,58,0.1)'};color:${hasTermii?'var(--green)':'var(--orange)'};font-weight:700">
-            ${hasTermii ? 'CONNECTED' : 'NOT SET'}
-          </div>
-        </div>
-        <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:12px">
-          Without Termii, customers must manually tap Send on WhatsApp. With Termii, messages fire silently &mdash; including SMS fallback for non-WhatsApp users.
-        </div>
-        <div class="input-group" style="margin-bottom:8px">
-          <label class="input-label">Termii API Key</label>
-          <input class="text-input" id="termii-key" placeholder="TL...your key" value="${savedKey}" type="password" style="font-family:monospace" />
-        </div>
-        <div class="input-group" style="margin-bottom:8px">
-          <label class="input-label">Sender Name (approved by Termii)</label>
-          <input class="text-input" id="termii-sender" placeholder="Protino" value="${savedSender}" />
-        </div>
-        <div style="display:flex;gap:8px">
-          <button onclick="saveNotifySettings()" style="flex:2;background:var(--blue);color:#000;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif">Save Termii Config</button>
-          <button onclick="testTermii()" style="flex:1;background:transparent;color:var(--blue);border:1px solid rgba(58,184,255,0.3);border-radius:10px;padding:10px;font-weight:600;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">Test</button>
-        </div>
-        <div style="margin-top:10px;font-size:11px;color:var(--dim);line-height:1.6">
-          &#128279; Sign up free at <span style="color:var(--blue)">termii.com</span> &middot; Get API key from Settings &gt; API Keys
-        </div>
-      </div>
-
+    <div class="modal-title">🔔 Alert Config</div>
+    <div class="modal-sub">Set up global dashboard system alerts variables.</div>
+    <div class="input-group" style="margin-bottom:12px">
+      <label class="input-label">Admin Phone Number</label>
+      <input class="text-input" id="wa-admin-phone" value="${NOTIFY_CONFIG.adminPhone}" />
     </div>
-
-    <button onclick="closeAuth()" style="width:100%;background:var(--surface2);color:var(--muted);border:1px solid var(--border);border-radius:12px;padding:13px;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">
-      Done
-    </button>`;
-
+    <button onclick="saveNotifySettings()" style="width:100%; background:var(--accent); color:#000; border:none; padding:12px; border-radius:10px; font-weight:700;">Save Alter Configs</button>
+  `;
   modal.classList.add('open');
 }
 
-function previewChannel(val) {
-  // Just highlight selected option visually — already handled by onchange
-}
-
 function saveNotifySettings() {
-  const phone   = document.getElementById('wa-admin-phone')?.value.trim();
-  const key     = document.getElementById('termii-key')?.value.trim();
-  const sender  = document.getElementById('termii-sender')?.value.trim();
-  const channel = document.querySelector('input[name="ch"]:checked')?.value || 'auto';
-
-  if (phone) {
-    if (phone.length < 10) { showToast('Enter a valid phone number', 'error'); return; }
-    localStorage.setItem('ph_admin_phone', phone);
-    NOTIFY_CONFIG.adminPhone = phone;
+  const p = document.getElementById('wa-admin-phone').value.trim();
+  if(p) {
+    localStorage.setItem('ph_admin_phone', p);
+    NOTIFY_CONFIG.adminPhone = p;
+    showToast('Settings Saved!', 'success');
+    closeAuth();
   }
-  if (key !== undefined)    { localStorage.setItem('ph_termii_key',     key);    NOTIFY_CONFIG.termiiKey    = key; }
-  if (sender)               { localStorage.setItem('ph_termii_sender',  sender); NOTIFY_CONFIG.termiiSender = sender; }
-  if (channel)              { localStorage.setItem('ph_notify_channel', channel); NOTIFY_CONFIG.channel     = channel; }
-
-  showToast('\u2705 Notification settings saved!', 'success');
-  closeAuth();
 }
-
-async function testTermii() {
-  if (!NOTIFY_CONFIG.termiiKey) { showToast('Add your Termii API key first', 'error'); return; }
-  showToast('Sending test via Termii...', 'success');
-  const res = await termiiSend(
-    NOTIFY_CONFIG.adminPhone,
-    'PROTINO HUB: Test message from Termii. Notifications are working!',
-    'generic'
-  );
-  showToast(res.ok ? '\u2705 Termii test sent!' : '\u274c Termii failed: ' + (res.reason||'check key'), res.ok ? 'success' : 'error');
-}
-
-function testWhatsApp() {
-  const demoMsg = buildAdminWhatsAppMsg({
-    id:'ORD-TEST', customer_name:'Amaka Obi', customer_phone:'2348012345678',
-    customer_email:'amaka@test.com', address:'15 Adeola Odeku, VI, Lagos',
-    total:12600, created_at:new Date().toISOString(),
-    items:[{emoji:'\ud83d\udc14',name:'Whole Chicken',qty:2},{emoji:'\ud83e\udd5a',name:'Eggs (30 crate)',qty:1}],
-  });
-  window.open(waLink(NOTIFY_CONFIG.adminPhone, demoMsg), '_blank');
-  showToast('\ud83d\udcf2 Opening WhatsApp test...', 'success');
-}
-
-function testSMS() {
-  const msg = 'PROTINO HUB: Test SMS. Your notification system is working correctly!';
-  window.location.href = `sms:+${normalisePhone(NOTIFY_CONFIG.adminPhone)}?body=${encodeURIComponent(msg)}`;
-  showToast('\ud83d\udcf1 Opening SMS test...', 'success');
-}
-
-function saveAdminPhone() { saveNotifySettings(); }
 
 // ============================================================
 // INIT
