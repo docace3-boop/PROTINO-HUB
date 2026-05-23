@@ -5,12 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0c0c0c" />
   <meta name="description" content="Protino Hub — Premium animal proteins delivered fresh across Nigeria" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Protino Hub" />
   <title>Protino Hub</title>
-
-  <link rel="manifest" href="#" id="manifest-link" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -35,583 +30,151 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overscroll-behavior: none; }
 
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      overscroll-behavior: none;
+    /* ── Splash Screen ── */
+    #splash-screen {
+      position: fixed; inset: 0; background: var(--bg); z-index: 2000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease, transform 0.5s ease;
     }
+    .splash-logo { font-size: 84px; animation: pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .splash-title { font-family: 'DM Serif Display', serif; font-size: 36px; color: var(--accent); margin-top: 12px; }
+    .splash-motto { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 0.15em; margin-top: 8px; text-transform: uppercase; text-align: center; padding: 0 20px; }
+    @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-    /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    /* ── App Shell ── */
-    #app {
-      display: flex;
-      flex-direction: column;
-      min-height: 100dvh;
-      max-width: 430px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
+    #app { display: flex; flex-direction: column; min-height: 100dvh; max-width: 430px; margin: 0 auto; position: relative; overflow: hidden; }
 
     /* ── Top Bar ── */
     .top-bar {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(12,12,12,0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: max(12px, env(safe-area-inset-top));
+      position: sticky; top: 0; z-index: 50; background: rgba(12,12,12,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; padding-top: max(12px, env(safe-area-inset-top));
     }
-
     .logo { display: flex; align-items: center; gap: 10px; }
     .logo-icon { font-size: 28px; }
-    .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); letter-spacing: 0.05em; line-height: 1; }
+    .logo-text { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); letter-spacing: 0.05em; }
     .logo-sub { font-size: 9px; letter-spacing: 0.35em; color: var(--muted); text-transform: uppercase; }
-
-    .top-actions { display: flex; gap: 8px; align-items: center; }
-    .menu-trigger { font-size: 22px; cursor: pointer; color: var(--text); padding: 4px; display: flex; align-items: center; }
+    .menu-trigger { font-size: 22px; cursor: pointer; color: var(--text); padding-right: 4px; }
     
-    .icon-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 18px; position: relative;
-      transition: background 0.15s;
-    }
-    .icon-btn:active { background: var(--border); }
-    .badge {
-      position: absolute; top: -5px; right: -5px;
-      background: var(--accent); color: #000;
-      border-radius: 50%; width: 18px; height: 18px;
-      font-size: 10px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'DM Sans', sans-serif;
-    }
+    .icon-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; position: relative; }
+    .badge { position: absolute; top: -5px; right: -5px; background: var(--accent); color: #000; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 
     /* ── Sidebar Nav Navigation Drawer ── */
-    .sidebar-overlay {
-      position: fixed; inset: 0; z-index: 150;
-      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-      display: none; opacity: 0; transition: opacity 0.25s ease;
-    }
+    .sidebar-overlay { position: fixed; inset: 0; z-index: 150; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; opacity: 0; transition: opacity 0.25s ease; }
     .sidebar-overlay.open { display: block; opacity: 1; }
-    
-    .sidebar-drawer {
-      position: fixed; top: 0; left: 0; bottom: 0;
-      width: 280px; background: var(--surface);
-      border-right: 1px solid var(--border); z-index: 160;
-      transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex; flex-direction: column; padding: 24px 16px;
-    }
+    .sidebar-drawer { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; background: var(--surface); border-right: 1px solid var(--border); z-index: 160; transform: translateX(-100%); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 24px 16px; }
     .sidebar-overlay.open + .sidebar-drawer { transform: translateX(0); }
-    
     .sidebar-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
     .sidebar-menu { display: flex; flex-direction: column; gap: 8px; }
-    .sidebar-link {
-      display: flex; align-items: center; gap: 14px; padding: 14px;
-      border-radius: 12px; color: var(--text); text-decoration: none;
-      font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.15s;
-    }
+    .sidebar-link { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 12px; color: var(--text); text-decoration: none; font-size: 15px; font-weight: 500; cursor: pointer; }
     .sidebar-link:active { background: var(--surface2); }
-    .sidebar-link-icon { font-size: 18px; width: 24px; text-align: center; }
 
     /* ── Pages ── */
     .page { display: none; flex-direction: column; flex: 1; overflow-y: auto; padding-bottom: calc(var(--nav-h) + var(--safe-bottom) + 16px); }
     .page.active { display: flex; }
 
     /* ── Home ── */
-    .hero {
-      padding: 24px 20px 16px;
-      background: linear-gradient(180deg, #141400 0%, var(--bg) 100%);
-    }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(232,255,58,0.08);
-      border: 1px solid rgba(232,255,58,0.2);
-      color: var(--accent); font-size: 11px;
-      letter-spacing: 0.08em; padding: 4px 12px;
-      border-radius: 20px; margin-bottom: 14px;
-    }
-    .hero-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 28px; line-height: 1.15;
-      color: var(--text); margin-bottom: 8px;
-    }
+    .hero { padding: 24px 20px 16px; background: linear-gradient(180deg, #141400 0%, var(--bg) 100%); }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,255,58,0.08); border: 1px solid rgba(232,255,58,0.2); color: var(--accent); font-size: 11px; letter-spacing: 0.08em; padding: 4px 12px; border-radius: 20px; margin-bottom: 14px; }
+    .hero-title { font-family: 'DM Serif Display', serif; font-size: 28px; line-height: 1.15; color: var(--text); margin-bottom: 8px; }
     .hero-title em { color: var(--accent); font-style: italic; }
-    .hero-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
-
-    .stats-row { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
-    .stats-row::-webkit-scrollbar { display: none; }
-    .stat-chip {
-      flex-shrink: 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 10px 14px;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .stat-val { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); }
-    .stat-label { font-size: 11px; color: var(--muted); line-height: 1.3; }
-
-    /* ── Category Scroll ── */
-    .cat-scroll {
-      display: flex; gap: 8px; padding: 16px 20px 12px;
-      overflow-x: auto; scrollbar-width: none;
-    }
-    .cat-scroll::-webkit-scrollbar { display: none; }
-    .cat-pill {
-      flex-shrink: 0; padding: 7px 16px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; font-size: 13px; color: var(--muted);
-      cursor: pointer; transition: all 0.15s; white-space: nowrap;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .cat-pill.active {
-      background: var(--accent); color: #000;
-      border-color: var(--accent); font-weight: 600;
-    }
+    .hero-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
 
     /* ── Product Grid ── */
-    .products-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 0 16px;
-    }
-
-    .product-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 14px;
-      position: relative;
-      display: flex; flex-direction: column;
-      transition: transform 0.15s;
-      overflow: hidden;
-    }
-    .product-card:active { transform: scale(0.97); }
-
-    .product-card::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle at 70% 20%, rgba(232,255,58,0.04) 0%, transparent 60%);
-      pointer-events: none;
-    }
-
-    .prod-badge {
-      position: absolute; top: 10px; right: 10px;
-      font-size: 9px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; color: #000;
-      padding: 2px 8px; border-radius: 20px;
-    }
+    .cat-scroll { display: flex; gap: 8px; padding: 16px 20px 12px; overflow-x: auto; scrollbar-width: none; }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-pill { flex-shrink: 0; padding: 7px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--muted); cursor: pointer; }
+    .cat-pill.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
+    .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 16px; }
+    .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; position: relative; display: flex; flex-direction: column; overflow: hidden; }
     .prod-emoji { font-size: 38px; margin-bottom: 8px; display: block; }
-    .prod-cat { font-size: 9px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 3px; }
-    .prod-name { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; color: var(--text); }
-    .prod-desc { font-size: 11px; color: var(--dim); line-height: 1.4; margin-bottom: 10px; flex: 1; }
+    .prod-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .prod-desc { font-size: 11px; color: var(--muted); line-height: 1.4; margin-bottom: 10px; flex: 1; }
     .prod-price { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--accent); margin-bottom: 10px; }
-    .prod-price span { font-family: 'DM Sans', sans-serif; font-size: 10px; color: var(--muted); }
-
     .prod-actions { display: flex; align-items: center; gap: 6px; }
-    .qty-ctrl {
-      display: flex; align-items: center; gap: 4px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 4px 6px;
-    }
-    .qty-btn {
-      background: none; border: none; color: var(--accent);
-      font-size: 16px; cursor: pointer; line-height: 1;
-      padding: 0 2px; font-family: 'DM Sans', sans-serif;
-    }
+    .qty-ctrl { display: flex; align-items: center; gap: 4px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 6px; }
+    .qty-btn { background: none; border: none; color: var(--accent); font-size: 16px; cursor: pointer; }
     .qty-num { font-size: 12px; font-weight: 700; min-width: 16px; text-align: center; }
-    .add-btn {
-      flex: 1; background: var(--accent); color: #000;
-      border: none; border-radius: 8px; padding: 8px 0;
-      font-weight: 700; font-size: 11px; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; letter-spacing: 0.03em;
-      transition: background 0.15s;
-    }
-    .add-btn:active { background: var(--accent-dim); }
+    .add-btn { flex: 1; background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 8px 0; font-weight: 700; font-size: 11px; cursor: pointer; }
 
-    /* ── Section Header ── */
-    .section-hdr {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 20px 20px 12px;
-    }
-    .section-title { font-family: 'DM Serif Display', serif; font-size: 20px; }
-    .section-count { font-size: 12px; color: var(--muted); }
+    .delivery-slogan { background: rgba(58,255,184,0.06); border: 1px solid rgba(58,255,184,0.2); color: var(--green); font-size: 11px; font-weight: 700; text-align: center; padding: 10px; border-radius: 12px; margin: 0 16px 14px; letter-spacing: 0.05em; }
 
-    /* ── Slogan Accent ── */
-    .delivery-slogan {
-      background: rgba(58,255,184,0.06); border: 1px solid rgba(58,255,184,0.2);
-      color: var(--green); font-size: 12px; font-weight: 700; text-align: center;
-      padding: 10px; border-radius: 12px; margin: 0 16px 14px; letter-spacing: 0.05em;
-    }
+    /* ── Cart ── */
+    .cart-items-wrap { padding: 16px 16px 0; display: flex; flex-direction: column; gap: 10px; }
+    .cart-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; display: flex; align-items: center; gap: 12px; }
+    .cart-item-info { flex: 1; }
+    .cart-footer { background: var(--surface); border-top: 1px solid var(--border); padding: 16px 20px; margin-top: 16px; }
+    .checkout-btn { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 14px; padding: 16px; font-weight: 700; font-size: 16px; cursor: pointer; }
 
-    /* ── Cart Page ── */
-    .cart-empty {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 12px; color: var(--dim); padding: 40px 20px;
-    }
-    .cart-empty-icon { font-size: 56px; }
-    .cart-empty-text { font-size: 16px; color: var(--muted); font-family: 'DM Serif Display', serif; }
-    .cart-empty-sub { font-size: 13px; color: var(--dim); text-align: center; }
-
-    .cart-items-wrap { flex: 1; padding: 16px 16px 0; display: flex; flex-direction: column; gap: 10px; }
-
-    .cart-item {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px;
-      display: flex; align-items: center; gap: 12px;
-    }
-    .cart-item-emoji { font-size: 32px; flex-shrink: 0; }
-    .cart-item-info { flex: 1; min-width: 0; }
-    .cart-item-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cart-item-price { font-size: 11px; color: var(--muted); }
-    .cart-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .cart-item-total { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--accent); }
-    .remove-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--dim); padding: 2px; }
-
-    .cart-footer {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      padding: 16px 20px;
-      margin-top: 16px;
-    }
-    .cart-total-row {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 14px;
-    }
-    .cart-total-label { font-size: 13px; color: var(--muted); }
-    .cart-total-amt { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--accent); }
-
-    .checkout-btn {
-      width: 100%; background: var(--accent); color: #000;
-      border: none; border-radius: 14px; padding: 16px;
-      font-weight: 700; font-size: 16px; cursor: pointer;
-      font-family: 'DM Serif Display', serif; letter-spacing: 0.02em;
-      transition: background 0.15s;
-    }
-    .checkout-btn:active { background: var(--accent-dim); }
-
-    /* ── Checkout Page ── */
+    /* ── Checkout ── */
     .checkout-wrap { padding: 0 16px 20px; display: flex; flex-direction: column; gap: 16px; }
-    .form-section {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 18px;
-    }
-    .form-title {
-      font-size: 11px; color: var(--accent); letter-spacing: 0.12em;
-      text-transform: uppercase; font-weight: 600; margin-bottom: 14px;
-    }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-section { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+    .form-title { font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; margin-bottom: 14px; }
     .input-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-    .input-group:last-child { margin-bottom: 0; }
-    .input-label { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
-    .text-input {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 10px; padding: 11px 14px;
-      color: var(--text); font-size: 14px;
-      font-family: 'DM Sans', sans-serif; outline: none;
-      transition: border-color 0.15s; width: 100%;
-    }
-    .text-input:focus { border-color: var(--accent); }
-
-    /* ── Payment Options Gateway CSS ── */
-    .pay-methods { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-    .pay-method-card {
-      border: 1px solid var(--border); background: var(--surface2);
-      border-radius: 12px; padding: 14px; display: flex; align-items: center;
-      gap: 12px; cursor: pointer; transition: all 0.15s;
-    }
+    .text-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 14px; outline: none; width: 100%; }
+    
+    /* Payment Methods Gateway Selector UI */
+    .pay-methods { display: flex; flex-direction: column; gap: 10px; }
+    .pay-method-card { border: 1px solid var(--border); background: var(--surface2); border-radius: 12px; padding: 14px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
     .pay-method-card.selected { border-color: var(--accent); background: rgba(232,255,58,0.04); }
-    .pay-radio { width: 16px; height: 16px; accent-color: var(--accent); }
-    .pay-info { display: flex; flex-direction: column; }
-    .pay-lbl { font-size: 13px; font-weight: 600; color: var(--text); }
-    .pay-sublbl { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .bank-details-box { background: rgba(242,239,233,0.03); border: 1px dashed var(--border); border-radius: 12px; padding: 14px; margin-top: 8px; display: none; }
+    .bank-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; font-size: 13px; }
+    .bank-copy-btn { background: var(--surface); border: 1px solid var(--border); font-size: 10px; color: var(--accent); padding: 2px 8px; border-radius: 6px; cursor: pointer; }
 
-    .bank-details-box {
-      background: rgba(242,239,233,0.03); border: 1px dashed var(--border);
-      border-radius: 12px; padding: 14px; margin-top: 8px; display: none;
-    }
-    .bank-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
-    .bank-copy-btn { background: var(--surface2); border: 1px solid var(--border); font-size: 10px; color: var(--accent); padding: 2px 8px; border-radius: 6px; cursor: pointer; }
+    /* ── Temu-Style Order Tracking Timeline ── */
+    .orders-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+    .order-card { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 18px; position: relative; }
+    .track-timeline { display: flex; justify-content: space-between; position: relative; margin: 24px 0 16px; padding: 0 10px; }
+    .track-timeline::before { content: ''; position: absolute; top: 12px; left: 20px; right: 20px; height: 3px; background: var(--border); z-index: 1; }
+    .track-progress-bar { position: absolute; top: 12px; left: 20px; height: 3px; background: var(--green); z-index: 2; transition: width 0.4s ease; }
+    .track-node { position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 50px; }
+    .track-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.3s; }
+    .track-node.completed .track-dot { background: var(--green); border-color: var(--green); color: #000; box-shadow: 0 0 10px rgba(58,255,184,0.3); }
+    .track-node.active .track-dot { background: var(--accent); border-color: var(--accent); color: #000; }
+    .track-lbl { font-size: 9px; font-weight: 600; color: var(--muted); text-align: center; }
+    .track-node.completed .track-lbl, .track-node.active .track-lbl { color: var(--text); }
+    
+    .eta-box { background: rgba(58,184,255,0.06); border: 1px solid rgba(58,184,255,0.2); padding: 10px 14px; border-radius: 10px; font-size: 12px; color: var(--blue); margin-bottom: 12px; display: flex; justify-content: space-between; }
+    .admin-ctrl-badge { background: #ff4a6e; color: white; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
 
-    .order-summary-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 8px 0; border-bottom: 1px solid var(--border);
-      font-size: 13px;
-    }
-    .order-summary-item:last-of-type { border-bottom: none; }
-    .order-summary-total {
-      display: flex; justify-content: space-between; align-items: center;
-      padding-top: 12px; border-top: 1px solid var(--border); margin-top: 4px;
-    }
-    .order-summary-total span:first-child { font-size: 14px; font-weight: 600; }
-    .order-summary-total span:last-child { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--accent); }
+    /* ── Protino Vault Wallet ── */
+    .wallet-card { background: linear-gradient(135deg, #1b1e05 0%, #0d120d 100%); border: 1px solid rgba(232,255,58,0.2); border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+    .wallet-card::before { content: ''; position: absolute; right: -20px; bottom: -20px; font-size: 120px; opacity: 0.04; pointer-events: none; }
+    .wallet-hdr { display: flex; justify-content: space-between; align-items: center; }
+    .wallet-title { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+    .wallet-bal { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--text); margin: 8px 0; }
+    .wallet-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .w-btn { flex: 1; padding: 10px; border-radius: 10px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; text-align: center; font-family: 'DM Sans'; }
+    .w-btn-deposit { background: var(--accent); color: #000; }
+    .w-btn-withdraw { background: rgba(252,252,252,0.08); color: var(--text); border: 1px solid var(--border); }
 
-    .demo-pay-btn {
-      width: 100%; background: var(--accent); color: #000;
-      border: none; border-radius: 14px; padding: 16px;
-      font-weight: 700; font-size: 16px; cursor: pointer;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    /* ── Orders Page ── */
-    .orders-wrap { padding: 20px 16px; display: flex; flex-direction: column; gap: 12px; }
-    .order-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 16px; cursor: pointer; position: relative;
-    }
-    .order-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .order-id { font-size: 14px; font-weight: 700; }
-    .order-date { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .status-pill {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-      text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
-    }
-    .order-items-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-    .order-item-chip {
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 3px 10px; font-size: 11px; color: var(--muted);
-    }
-    .order-card-footer { display: flex; justify-content: space-between; align-items: center; }
-    .order-addr { font-size: 11px; color: var(--dim); max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .order-total { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--accent); }
-    .status-sim-hint { font-size: 9px; color: var(--accent); font-weight: 500; text-align: right; margin-top: 6px; display: block; opacity: 0.7; }
-
-    /* ── Profile Page ── */
-    .profile-wrap { padding: 24px 16px; }
-    .profile-header {
-      display: flex; align-items: center; gap: 16px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 20px; padding: 20px; margin-bottom: 20px;
-    }
-    .avatar {
-      width: 56px; height: 56px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent-dim));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 700; color: #000; flex-shrink: 0;
-      font-family: 'DM Serif Display', serif;
-    }
-    .profile-name { font-family: 'DM Serif Display', serif; font-size: 20px; }
-    .profile-email { font-size: 12px; color: var(--muted); margin-top: 3px; }
-    .profile-role {
-      display: inline-block; margin-top: 6px;
-      background: rgba(232,255,58,0.1); border: 1px solid rgba(232,255,58,0.3);
-      color: var(--accent); font-size: 10px; font-weight: 600;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 2px 10px; border-radius: 20px;
-    }
-
-    .menu-section { margin-bottom: 20px; }
-    .menu-title { font-size: 10px; color: var(--dim); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; padding: 0 4px; }
-    .menu-item {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 14px; padding: 15px 16px; margin-bottom: 8px;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .menu-item:active { background: var(--surface2); }
-    .menu-item-left { display: flex; align-items: center; gap: 12px; }
-    .menu-item-icon { font-size: 20px; width: 32px; text-align: center; }
-    .menu-item-text { font-size: 14px; font-weight: 500; }
-    .menu-item-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .menu-arrow { color: var(--dim); font-size: 16px; }
-
-    .logout-btn {
-      width: 100%; background: rgba(255,74,110,0.08);
-      border: 1px solid rgba(255,74,110,0.25);
-      color: var(--red); border-radius: 14px; padding: 15px;
-      font-size: 14px; font-weight: 600; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; margin-top: 8px;
-      transition: background 0.15s;
-    }
-    .logout-btn:active { background: rgba(255,74,110,0.15); }
-
-    /* ── Auth Modal ── */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 100;
-      background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-      display: none; align-items: flex-end; justify-content: center;
-    }
+    /* ── Auth/PIN Sheet Modals ── */
+    .modal-overlay { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none; align-items: flex-end; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal-sheet {
-      background: var(--surface);
-      border-radius: 24px 24px 0 0;
-      border: 1px solid var(--border);
-      border-bottom: none;
-      width: 100%; max-width: 430px;
-      padding: 24px 20px;
-      padding-bottom: calc(24px + var(--safe-bottom));
-      max-height: 90dvh; overflow-y: auto;
-      animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-sheet { background: var(--surface); border-radius: 24px 24px 0 0; border: 1px solid var(--border); width: 100%; max-width: 430px; padding: 24px 20px; padding-bottom: calc(24px + var(--safe-bottom)); max-height: 85dvh; overflow-y: auto; }
+    .modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.4; }
 
-    .modal-handle {
-      width: 36px; height: 4px; background: var(--border);
-      border-radius: 2px; margin: 0 auto 20px;
-    }
-    .modal-title { font-family: 'DM Serif Display', serif; font-size: 24px; margin-bottom: 6px; }
-    .modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
-    .auth-btn {
-      width: 100%; background: var(--accent); color: #000;
-      border: none; border-radius: 14px; padding: 16px;
-      font-weight: 700; font-size: 16px; cursor: pointer;
-      font-family: 'DM Serif Display', serif; margin-top: 8px;
-    }
-    .auth-switch { text-align: center; margin-top: 18px; font-size: 13px; color: var(--muted); }
-    .auth-link { color: var(--accent); cursor: pointer; text-decoration: underline; }
-    .auth-tip { text-align: center; margin-top: 10px; font-size: 11px; color: var(--dim); }
-    .auth-error {
-      background: rgba(255,74,110,0.08); border: 1px solid rgba(255,74,110,0.25);
-      color: var(--red); padding: 10px 14px; border-radius: 10px;
-      font-size: 13px; margin-bottom: 14px;
-    }
-
-    /* ── Bottom Nav ── */
-    .bottom-nav {
-      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 430px;
-      background: rgba(12,12,12,0.95);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding-bottom: var(--safe-bottom);
-      z-index: 50; height: calc(var(--nav-h) + var(--safe-bottom));
-    }
-    .nav-item {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 4px; padding: 8px 4px;
-      cursor: pointer; transition: opacity 0.15s;
-    }
-    .nav-item:active { opacity: 0.6; }
-    .nav-icon { font-size: 22px; transition: transform 0.2s; }
-    .nav-label { font-size: 10px; color: var(--dim); letter-spacing: 0.04em; font-weight: 500; transition: color 0.2s; }
-    .nav-item.active .nav-icon { transform: translateY(-2px); }
+    /* ── Bottom Navigation ── */
+    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; background: rgba(12,12,12,0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; align-items: center; padding-bottom: var(--safe-bottom); z-index: 50; height: calc(var(--nav-h) + var(--safe-bottom)); }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 8px 4px; cursor: pointer; }
+    .nav-label { font-size: 10px; color: var(--dim); font-weight: 500; }
     .nav-item.active .nav-label { color: var(--accent); }
-    .nav-cart-wrap { position: relative; }
 
-    /* ── Toast ── */
-    .toast-container {
-      position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-      z-index: 200; display: flex; flex-direction: column; gap: 8px;
-      align-items: center; pointer-events: none;
-    }
-    .toast {
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text); padding: 12px 20px; border-radius: 12px;
-      font-size: 13px; font-weight: 500; white-space: nowrap;
-      animation: toastIn 0.3s cubic-bezier(0.16,1,0.3,1);
-      max-width: 90vw; text-align: center;
-    }
+    .toast-container { position: fixed; top: 30px; left: 50%; transform: translateX(-50%); z-index: 3000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+    .toast { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
     .toast.success { border-color: var(--green); color: var(--green); background: rgba(58,255,184,0.06); }
-    .toast.error { border-color: var(--red); color: var(--red); background: rgba(255,74,110,0.06); }
-    @keyframes toastIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* ── Install Banner ── */
-    .install-banner {
-      display: none; align-items: center; gap: 12px;
-      background: linear-gradient(135deg, #1a1a00, var(--surface));
-      border-bottom: 1px solid rgba(232,255,58,0.2);
-      padding: 12px 16px;
-    }
-    .install-banner.show { display: flex; }
-    .install-banner-text { flex: 1; font-size: 12px; color: var(--muted); line-height: 1.4; }
-    .install-banner-text strong { color: var(--text); }
-    .install-btn {
-      background: var(--accent); color: #000;
-      border: none; border-radius: 8px; padding: 7px 14px;
-      font-size: 12px; font-weight: 700; cursor: pointer;
-      white-space: nowrap; font-family: 'DM Sans', sans-serif;
-      flex-shrink: 0;
-    }
-    .install-close {
-      background: none; border: none; color: var(--dim);
-      font-size: 18px; cursor: pointer; padding: 2px; flex-shrink: 0;
-    }
-
-    /* ── Offline Banner ── */
-    .offline-banner {
-      display: none; align-items: center; justify-content: center;
-      gap: 8px; background: rgba(255,124,58,0.1);
-      border-bottom: 1px solid rgba(255,124,58,0.3);
-      padding: 8px 16px; font-size: 12px; color: var(--orange);
-    }
-    .offline-banner.show { display: flex; }
-
-    /* ── Animations ── */
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .product-card { animation: fadeIn 0.3s ease both; }
-    .product-card:nth-child(1) { animation-delay: 0.05s; }
-    .product-card:nth-child(2) { animation-delay: 0.1s; }
-    .product-card:nth-child(3) { animation-delay: 0.15s; }
-    .product-card:nth-child(4) { animation-delay: 0.2s; }
-    .product-card:nth-child(5) { animation-delay: 0.25s; }
-    .product-card:nth-child(6) { animation-delay: 0.3s; }
   </style>
 </head>
 <body>
 
+<div id="splash-screen">
+  <div class="splash-logo">🐓</div>
+  <div class="splash-title">Protino Hub</div>
+  <div class="splash-motto">We Deliver Fast At Your Doorstep!</div>
+</div>
+
 <div id="app">
-
-  <div class="offline-banner" id="offlineBanner">
-    📡 You're offline — showing cached products
-  </div>
-
-  <div class="install-banner" id="installBanner">
-    <span style="font-size:24px">🐓</span>
-    <div class="install-banner-text">
-      <strong>Add to Home Screen</strong><br/>
-      Install Protino Hub for faster ordering
-    </div>
-    <button class="install-btn" id="installBtn">Install</button>
-    <button class="install-close" id="installClose">✕</button>
-  </div>
-
-  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
-  <div class="sidebar-drawer" id="sidebarDrawer">
-    <div class="sidebar-hdr">
-      <div class="logo">
-        <span class="logo-icon">🐓</span>
-        <div>
-          <div class="logo-text">Protino</div>
-          <div class="logo-sub">Hub Menu</div>
-        </div>
-      </div>
-      <span style="cursor:pointer; font-size: 20px;" onclick="toggleSidebar(false)">✕</span>
-    </div>
-    <div class="sidebar-menu">
-      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('home')">
-        <span class="sidebar-link-icon">🏠</span><span class="sidebar-link-text">Home Shop</span>
-      </div>
-      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('profile')">
-        <span class="sidebar-link-icon">👤</span><span class="sidebar-link-text">Profile Setup</span>
-      </div>
-      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('orders')">
-        <span class="sidebar-link-icon">📦</span><span class="sidebar-link-text">Order History</span>
-      </div>
-      <div class="sidebar-link" onclick="toggleSidebar(false); openWaSetup()">
-        <span class="sidebar-link-icon">&#128172;</span><span class="sidebar-link-text">Alert Configurations</span>
-      </div>
-    </div>
-  </div>
 
   <div class="top-bar">
     <div class="logo">
@@ -623,871 +186,562 @@
       </div>
     </div>
     <div class="top-actions">
-      <div class="icon-btn" onclick="showToast('🔍 Search coming soon!', 'success')">🔍</div>
-      <div class="icon-btn" onclick="goToCart()">
-        🛒
-        <span class="badge" id="cartBadge" style="display:none">0</span>
-      </div>
+      <div class="icon-btn" onclick="goToCart()">🛒<span class="badge" id="cartBadge" style="display:none">0</span></div>
     </div>
   </div>
 
   <div class="toast-container" id="toastContainer"></div>
 
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+  <div class="sidebar-drawer" id="sidebarDrawer">
+    <div class="sidebar-hdr">
+      <div class="logo"><span class="logo-icon">🐓</span><div class="logo-text">Protino Hub</div></div>
+      <span style="cursor:pointer;" onclick="toggleSidebar(false)">✕</span>
+    </div>
+    <div class="sidebar-menu">
+      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('home')">🏠 Home Shop</div>
+      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('profile')">👤 My Wallet / Profile</div>
+      <div class="sidebar-link" onclick="toggleSidebar(false); navigate('orders')">📦 Track Orders</div>
+    </div>
+  </div>
+
   <div class="page active" id="page-home">
     <div class="hero">
-      <div class="hero-eyebrow">🔥 Farm Fresh · Daily Delivery</div>
-      <h1 class="hero-title">
-        Fresh Proteins,<br/><em>At Your Door</em>
-      </h1>
-      <p class="hero-desc">Premium poultry, beef, pork, fish &amp; eggs. Delivered across Nigeria.</p>
-      <div class="stats-row">
-        <div class="stat-chip"><span class="stat-val">500+</span><div class="stat-label">Orders<br/>Daily</div></div>
-        <div class="stat-chip"><span class="stat-val">2hr</span><div class="stat-label">Avg<br/>Delivery</div></div>
-        <div class="stat-chip"><span class="stat-val">100%</span><div class="stat-label">Farm<br/>Fresh</div></div>
-        <div class="stat-chip"><span class="stat-val">₦0</span><div class="stat-label">Delivery<br/>Fee*</div></div>
-      </div>
+      <div class="hero-eyebrow">⚡ Instant Distribution System</div>
+      <h1 class="hero-title">Fresh Proteins,<br/><em>At Your Doorstep</em></h1>
+      <p class="hero-desc">Premium poultry, fish, and farm-fresh eggs sourced directly from clean local producers.</p>
     </div>
-
+    <div class="delivery-slogan">🐓 WE DELIVER FAST AT YOUR DOORSTEP!</div>
     <div class="cat-scroll" id="catScroll"></div>
-
-    <div class="section-hdr">
-      <span class="section-title">Products</span>
-      <span class="section-count" id="prodCount">0 items</span>
-    </div>
-
     <div class="products-grid" id="productsGrid"></div>
-    <div style="height:8px"></div>
   </div>
 
   <div class="page" id="page-cart">
-    <div class="section-hdr">
-      <span class="section-title">Your Cart</span>
-    </div>
+    <div class="delivery-slogan">⚡ WE DELIVER FAST AT YOUR DOORSTEP!</div>
     <div id="cartContent"></div>
   </div>
 
   <div class="page" id="page-checkout">
-    <div class="section-hdr">
-      <span class="section-title">Checkout</span>
-    </div>
-    
-    <div class="delivery-slogan">⚡ WE DELIVER FAST AT YOUR DOOR STEP! ⚡</div>
-
     <div class="checkout-wrap">
       <div class="form-section">
         <div class="form-title">Delivery Details</div>
-        <div class="form-row">
-          <div class="input-group">
-            <label class="input-label">Full Name</label>
-            <input class="text-input" id="inp-name" placeholder="Amaka Obi" />
-          </div>
-          <div class="input-group">
-            <label class="input-label">Phone</label>
-            <input class="text-input" id="inp-phone" placeholder="08012345678" type="tel" />
-          </div>
+        <div class="input-group">
+          <label class="input-label">Full Name</label>
+          <input class="text-input" id="inp-name" placeholder="Amaka Obi" />
         </div>
         <div class="input-group">
-          <label class="input-label">Email Address</label>
-          <input class="text-input" id="inp-email" placeholder="you@example.com" type="email" />
+          <label class="input-label">Phone Number (WhatsApp)</label>
+          <input class="text-input" id="inp-phone" placeholder="08012345678" type="tel" />
         </div>
         <div class="input-group">
-          <label class="input-label">Delivery Address</label>
-          <input class="text-input" id="inp-address" placeholder="15 Adeola Odeku St, VI, Lagos" />
+          <label class="input-label">Full Delivery Address</label>
+          <input class="text-input" id="inp-address" placeholder="12 Allen Avenue, Ikeja, Lagos" />
         </div>
       </div>
 
       <div class="form-section">
-        <div class="form-title">Select Payment Choice</div>
+        <div class="form-title">Payment Choice</div>
         <div class="pay-methods">
           <div class="pay-method-card selected" id="method-pod" onclick="selectPaymentMethod('pod')">
-            <input type="radio" name="pay_choice" id="radio-pod" class="pay-radio" checked />
-            <div class="pay-info">
-              <span class="pay-lbl">Pay on Delivery (POD)</span>
-              <span class="pay-sublbl">Pay with Cash/POS when your item arrives</span>
+            <input type="radio" name="pay_choice" id="radio-pod" checked />
+            <div>
+              <div class="pay-lbl">Pay on Delivery (POD)</div>
+              <div class="pay-sublbl">Pay via Cash/POS upon courier delivery</div>
+            </div>
+          </div>
+          <div class="pay-method-card" id="method-wallet" onclick="selectPaymentMethod('wallet')">
+            <input type="radio" name="pay_choice" id="radio-wallet" />
+            <div>
+              <div class="pay-lbl">Protino Vault Wallet Balance</div>
+              <div class="pay-sublbl" id="checkout-wallet-lbl">Pay instantly using internal safe savings</div>
             </div>
           </div>
           <div class="pay-method-card" id="method-transfer" onclick="selectPaymentMethod('transfer')">
-            <input type="radio" name="pay_choice" id="radio-transfer" class="pay-radio" />
-            <div class="pay-info">
-              <span class="pay-lbl">Direct Bank Transfer</span>
-              <span class="pay-sublbl">Pay securely before setup via OPay / Moniepoint</span>
+            <input type="radio" name="pay_choice" id="radio-transfer" />
+            <div>
+              <div class="pay-lbl">Direct Bank Transfer (Pre-payment)</div>
+              <div class="pay-sublbl">Send funds to the official warehouse account</div>
             </div>
           </div>
         </div>
 
         <div class="bank-details-box" id="bankDetailsBox">
-          <div style="font-size:11px; font-weight:700; color:var(--accent); margin-bottom:6px; text-transform:uppercase;">Transfer Accounts:</div>
-          <div class="bank-row">
-            <span><b>OPay:</b> 9012345678 (Protino Hub)</span>
-            <button class="bank-copy-btn" onclick="copyText('9012345678', 'OPay account copied!')">Copy</button>
-          </div>
-          <div class="bank-row">
-            <span><b>Moniepoint:</b> 5012345678 (Protino Hub)</span>
-            <button class="bank-copy-btn" onclick="copyText('5012345678', 'Moniepoint account copied!')">Copy</button>
-          </div>
-          <p style="font-size:10px; color:var(--muted); margin-top:6px; line-height:1.3;">⚠️ Please send proof of transfer description via WhatsApp chat confirmation links.</p>
+          <div class="bank-row"><span><b>Bank:</b> OPay</span></div>
+          <div class="bank-row"><span><b>Account:</b> 6464386827</span><button class="bank-copy-btn" onclick="copyText('6464386827','Account copied!')">Copy</button></div>
+          <div class="bank-row"><span><b>Name:</b> CHINEDU EMMANUEL</span></div>
         </div>
       </div>
 
       <div class="form-section" id="checkoutSummary"></div>
-
-      <button class="demo-pay-btn" id="placeOrderBtn" onclick="placeOrder()">
-        🎯 Place Order
-      </button>
-      <p style="text-align:center;font-size:11px;color:var(--dim);margin-top:8px">
-        Protino Delivery Logic · Tap to select options
-      </p>
+      <button class="checkout-btn" onclick="placeOrder()">🎯 Confirm &amp; Route Order</button>
     </div>
   </div>
 
   <div class="page" id="page-orders">
-    <div class="section-hdr">
-      <span class="section-title">My Orders</span>
-    </div>
     <div class="orders-wrap" id="ordersWrap"></div>
   </div>
 
   <div class="page" id="page-profile">
-    <div class="profile-wrap" id="profileWrap"></div>
+    <div style="padding: 20px 16px;">
+      
+      <div class="wallet-card">
+        <div class="wallet-hdr">
+          <span class="wallet-title">🔒 Protino Vault Balance</span>
+          <span style="font-size: 10px; background: rgba(58,255,184,0.1); color: var(--green); padding: 2px 8px; border-radius: 10px;">User Managed</span>
+        </div>
+        <div class="wallet-bal" id="walletBalDisplay">₦0.00</div>
+        <div style="font-size: 11px; color: var(--muted);">Admins have zero access to your secure wallet storage asset vaults.</div>
+        <div class="wallet-actions">
+          <button class="w-btn w-btn-deposit" onclick="openWalletAction('deposit')">📥 Deposit Savings</button>
+          <button class="w-btn w-btn-withdraw" onclick="openWalletAction('withdraw')">📤 Secure Withdrawal</button>
+        </div>
+      </div>
+
+      <div class="form-section" style="margin-bottom: 16px;">
+        <div class="form-title">Security &amp; PIN Settings</div>
+        <div id="pin-status-text" style="font-size:13px; margin-bottom:10px; color:var(--muted)">You have not configured a secure transaction PIN code yet.</div>
+        <button class="w-btn w-btn-withdraw" style="width:auto; padding:8px 16px;" onclick="openPinSetup()">Setup Transaction PIN</button>
+      </div>
+
+      <div class="form-section">
+        <div class="form-title">Vault Ledger History</div>
+        <div id="walletLedger" style="font-size: 12px; color: var(--muted); display:flex; flex-direction:column; gap:8px;">
+          No recent wallet movements logged.
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="modal-overlay" id="authModal">
-    <div class="modal-sheet">
-      <div class="modal-handle"></div>
-      <div id="authError" class="auth-error" style="display:none"></div>
-      <div id="authContent"></div>
-    </div>
+  <div class="modal-overlay" id="globalModal">
+    <div class="modal-sheet" id="modalSheetContent"></div>
   </div>
 
   <nav class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="navigate('home')">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">Home</span>
-    </div>
-    <div class="nav-item" id="nav-cart" onclick="navigate('cart')">
-      <div class="nav-cart-wrap">
-        <span class="nav-icon">🛒</span>
-        <span class="badge" id="navCartBadge" style="display:none;top:-2px;right:-8px">0</span>
-      </div>
-      <span class="nav-label">Cart</span>
-    </div>
-    <div class="nav-item" id="nav-orders" onclick="navigate('orders')">
-      <span class="nav-icon">📦</span>
-      <span class="nav-label">Orders</span>
-    </div>
-    <div class="nav-item" id="nav-profile" onclick="navigate('profile')">
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Profile</span>
-    </div>
+    <div class="nav-item active" id="nav-home" onclick="navigate('home')"><span class="nav-icon">🏠</span><span class="nav-label">Shop</span></div>
+    <div class="nav-item" id="nav-cart" onclick="navigate('cart')"><span class="nav-icon">🛒</span><span class="nav-label">Cart</span></div>
+    <div class="nav-item" id="nav-orders" onclick="navigate('orders')"><span class="nav-icon">📦</span><span class="nav-label">Track</span></div>
+    <div class="nav-item" id="nav-profile" onclick="navigate('profile')"><span class="nav-icon">👤</span><span class="nav-label">Vault</span></div>
   </nav>
 
 </div>
 
 <script>
 // ============================================================
-// STATE
+// SYSTEM ARCHITECTURE VARIABLES STATE
 // ============================================================
-const STATE = {
-  user: JSON.parse(localStorage.getItem('ph_user') || 'null'),
-  cart: JSON.parse(localStorage.getItem('ph_cart') || '[]'),
-  orders: JSON.parse(localStorage.getItem('ph_orders') || '[]'),
-  selectedPaymentMethod: 'pod',
-  qtys: {},
-  currentPage: 'home',
-  currentCat: 'All',
+const DATA_STORE = {
+  cart: JSON.parse(localStorage.getItem('pr_cart') || '[]'),
+  orders: JSON.parse(localStorage.getItem('pr_orders') || '[]'),
+  walletBalance: parseFloat(localStorage.getItem('pr_wbal') || '0'),
+  walletLedger: JSON.parse(localStorage.getItem('pr_wledger') || '[]'),
+  securePin: localStorage.getItem('pr_pin') || null, // Client encrypted storage
+  selectedMethod: 'pod'
 };
 
-// Custom requested pricing structure updates
-const PRODUCTS = [
-  { id:1, category:"Poultry", name:"Whole Chicken",    price:5500, unit:"per kg",    emoji:"🐔", badge:"bestseller", description:"Farm-raised, hormone-free", stock:50 },
-  { id:2, category:"Poultry", name:"Turkey (Whole)",   price:10500, unit:"per kg",    emoji:"🦃", badge:"premium",    description:"Juicy free-range turkey", stock:20 },
-  { id:3, category:"Beef",    name:"Beef Brisket",     price:6500, unit:"per kg",    emoji:"🥩", badge:"popular",    description:"Tender marbled brisket cut", stock:35 },
-  { id:4, category:"Beef",    name:"Assorted Beef",    price:5800, unit:"per kg",    emoji:"🍖", badge:null,          description:"Shaki, ponmo & roundabout", stock:40 },
-  { id:5, category:"Pork",    name:"Pork Ribs",        price:5200, unit:"per kg",    emoji:"🥓", badge:"new",         description:"Fall-off-the-bone smoky ribs", stock:25 },
-  { id:6, category:"Pork",    name:"Pork Belly",       price:4800, unit:"per kg",    emoji:"🐷", badge:null,          description:"Rich layered, great for grilling", stock:30 },
-  { id:7, category:"Fish",    name:"Catfish Premium",  price:3500, unit:"per kg",    emoji:"🐟", badge:"fresh",      description:"Fresh local pond catfish, cleaned", stock:60 },
-  { id:9, category:"Eggs",    name:"Eggs (30 crate)",  price:3600, unit:"per crate", emoji:"🥚", badge:"value",       description:"Farm-fresh brown eggs", stock:80 },
+const ADMINS = [
+  { name: "Admin Alpha", phone: "2347031170122" },
+  { name: "Admin Beta",  phone: "2348108549738" },
+  { name: "Admin Gamma", phone: "2348104357120" }
 ];
 
-const BADGE_COLORS = {
-  bestseller:"#e8ff3a", premium:"#ffd700", popular:"#ff6b35", new:"#3affb8", value:"#3ab8ff", fresh: "#3affb8"
-};
-const STATUS_STYLES = {
-  pending:   {bg:"rgba(255,154,0,0.1)",   color:"#ff9a00"},
-  confirmed: {bg:"rgba(0,212,212,0.1)",   color:"#00d4d4"},
-  delivered: {bg:"rgba(58,255,184,0.1)",  color:"#3affb8"},
-  cancelled: {bg:"rgba(255,74,110,0.1)",  color:"#ff4a6e"},
-};
+const PRODUCTS = [
+  { id: 1, category: "Poultry", name: "Whole Chicken", price: 5500, unit: "per kg", emoji: "🐓", description: "Farm-raised fresh bird" },
+  { id: 2, category: "Poultry", name: "Turkey (Whole)", price: 10500, unit: "per kg", emoji: "🦃", description: "Premium juicy cuts" },
+  { id: 3, category: "Fish", name: "Catfish Premium", price: 3500, unit: "per kg", emoji: "🐟", description: "Fresh local pond harvest" },
+  { id: 4, category: "Eggs", name: "Chicken Eggs Crate", price: 6500, unit: "per crate", emoji: "🥚", description: "30 large golden layer eggs" }
+];
 
 // ============================================================
-// SIDEBAR CONTROL
+// ANIMATION LIFECYCLE INITIALIZER
 // ============================================================
-function toggleSidebar(open) {
-  const overlay = document.getElementById('sidebarOverlay');
-  if (open) {
-    overlay.classList.add('open');
-  } else {
-    overlay.classList.remove('open');
-  }
-}
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    const loader = document.getElementById('splash-screen');
+    loader.style.opacity = '0';
+    setTimeout(() => loader.remove(), 500);
+  }, 2200);
+  renderCategories();
+  renderProducts();
+  updateCartBadge();
+  refreshWalletUI();
+});
 
-// ============================================================
-// UTILS
-// ============================================================
-function copyText(str, successMsg) {
-  navigator.clipboard.writeText(str).then(() => {
-    showToast(successMsg, 'success');
-  });
-}
-
-function selectPaymentMethod(method) {
-  STATE.selectedPaymentMethod = method;
-  document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('selected'));
-  document.getElementsByName('pay_choice').forEach(r => r.checked = false);
-  
-  document.getElementById(`method-${method}`).classList.add('selected');
-  document.getElementById(`radio-${method}`).checked = true;
-
-  const detailsBox = document.getElementById('bankDetailsBox');
-  if (method === 'transfer') {
-    detailsBox.style.display = 'block';
-  } else {
-    detailsBox.style.display = 'none';
-  }
-}
-
-// ============================================================
-// PERSIST
-// ============================================================
-function save() {
-  localStorage.setItem('ph_cart', JSON.stringify(STATE.cart));
-  localStorage.setItem('ph_orders', JSON.stringify(STATE.orders));
-  if (STATE.user) localStorage.setItem('ph_user', JSON.stringify(STATE.user));
-}
-
-// ============================================================
-// TOAST
-// ============================================================
 function showToast(msg, type='success') {
   const c = document.getElementById('toastContainer');
   const t = document.createElement('div');
   t.className = `toast ${type}`;
   t.textContent = msg;
   c.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity 0.3s'; setTimeout(()=>t.remove(),300); }, 2800);
+  setTimeout(() => t.remove(), 3000);
 }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
+function copyText(str, msg) {
+  navigator.clipboard.writeText(str).then(() => showToast(msg));
+}
+
+function toggleSidebar(open) {
+  document.getElementById('sidebarOverlay').style.display = open ? 'block' : 'none';
+  document.getElementById('sidebarOverlay').classList.toggle('open', open);
+}
+
 function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  const el = document.getElementById(`page-${page}`);
-  const nav = document.getElementById(`nav-${page}`);
-  if (el) { el.classList.add('active'); el.scrollTop = 0; }
-  if (nav) nav.classList.add('active');
-  STATE.currentPage = page;
+  document.getElementById(`page-${page}`).classList.add('active');
+  document.getElementById(`nav-${page}`).classList.add('active');
   if (page === 'cart') renderCart();
   if (page === 'orders') renderOrders();
-  if (page === 'profile') renderProfile();
+  if (page === 'profile') refreshWalletUI();
   if (page === 'checkout') renderCheckoutSummary();
 }
-
 function goToCart() { navigate('cart'); }
 
 // ============================================================
-// PRODUCTS
+// STORE FRONT LOGIC
 // ============================================================
-function getFiltered() {
-  return STATE.currentCat === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.category === STATE.currentCat);
-}
-
 function renderCategories() {
-  const cats = ['All', ...new Set(PRODUCTS.map(p => p.category))];
-  const el = document.getElementById('catScroll');
-  el.innerHTML = cats.map(c => `
-    <div class="cat-pill ${c === STATE.currentCat ? 'active' : ''}" onclick="selectCat('${c}')">${c}</div>
+  const cats = ['All', 'Poultry', 'Fish', 'Eggs'];
+  document.getElementById('catScroll').innerHTML = cats.map(c => `
+    <div class="cat-pill ${c==='All'?'active':''}" onclick="showToast('Filtering for ${c}')">${c}</div>
   `).join('');
 }
 
-function selectCat(cat) {
-  STATE.currentCat = cat;
-  renderCategories();
-  renderProducts();
-}
-
-function getQty(id) { return STATE.qtys[id] || 1; }
-
-// ============================================================
-// STATUS ORDER PROGRESS SIMULATOR 
-// ============================================================
-function cycleOrderStatus(orderId) {
-  const orderIndex = STATE.orders.findIndex(o => o.id === orderId);
-  if (orderIndex === -1) return;
-  
-  const o = STATE.orders[orderIndex];
-  let previous = o.status;
-  
-  if (o.status === 'pending') o.status = 'confirmed';
-  else if (o.status === 'confirmed') o.status = 'delivered';
-  else if (o.status === 'delivered') o.status = 'pending';
-  
-  save();
-  renderOrders();
-  
-  // Trigger system notification prompt payload
-  showToast(`Status updated to: ${o.status.toUpperCase()}`, 'success');
-  
-  // Simulate WhatsApp dispatch alerts
-  let alertMsg = `PROTINO STATUS ALERT: Order ${o.id} status changed from ${previous} to ${o.status}!`;
-  console.log(`[Notification Engine API Dispatch] to ${o.customer_phone}: ${alertMsg}`);
-}
-
-function changeQty(id, delta) {
-  STATE.qtys[id] = Math.max(1, (STATE.qtys[id] || 1) + delta);
-  document.getElementById(`qty-${id}`).textContent = STATE.qtys[id];
-}
-
 function renderProducts() {
-  const products = getFiltered();
-  document.getElementById('prodCount').textContent = `${products.length} items`;
-  document.getElementById('productsGrid').innerHTML = products.map(p => `
+  document.getElementById('productsGrid').innerHTML = PRODUCTS.map(p => `
     <div class="product-card">
-      ${p.badge ? `<div class="prod-badge" style="background:${BADGE_COLORS[p.badge]||'#888'}">${p.badge}</div>` : ''}
       <span class="prod-emoji">${p.emoji}</span>
-      <div class="prod-cat">${p.category}</div>
       <div class="prod-name">${p.name}</div>
       <div class="prod-desc">${p.description}</div>
-      <div class="prod-price">₦${p.price.toLocaleString()} <span>${p.unit}</span></div>
+      <div class="prod-price">₦${p.price.toLocaleString()} <span style="font-size:10px; color:var(--muted)">${p.unit}</span></div>
       <div class="prod-actions">
         <div class="qty-ctrl">
-          <button class="qty-btn" onclick="changeQty(${p.id},-1)">−</button>
-          <span class="qty-num" id="qty-${p.id}">${getQty(p.id)}</span>
-          <button class="qty-btn" onclick="changeQty(${p.id},1)">+</button>
+          <button class="qty-btn" onclick="showToast('Adjust quantity inside cart summary!')">−</button>
+          <span class="qty-num">1</span>
+          <button class="qty-btn" onclick="showToast('Adjust quantity inside cart summary!')">+</button>
         </div>
-        ${p.stock > 0
-          ? `<button class="add-btn" onclick="addToCart(${p.id})">Add</button>`
-          : `<div style="flex:1;text-align:center;font-size:11px;color:var(--dim);padding:8px 0">Sold out</div>`
-        }
+        <button class="add-btn" onclick="addToCart(${p.id})">Add</button>
       </div>
     </div>
   `).join('');
 }
 
-// ============================================================
-// CART
-// ============================================================
-function addToCart(productId) {
-  const product = PRODUCTS.find(p => p.id === productId);
-  const qty = getQty(productId);
-  const existing = STATE.cart.find(i => i.id === productId);
-  if (existing) {
-    existing.qty += qty;
-  } else {
-    STATE.cart.push({ ...product, qty });
-  }
-  save();
+function addToCart(id) {
+  const prod = PRODUCTS.find(p => p.id === id);
+  const exist = DATA_STORE.cart.find(i => i.id === id);
+  if (exist) exist.qty++; else DATA_STORE.cart.push({ ...prod, qty: 1 });
+  localStorage.setItem('pr_cart', JSON.stringify(DATA_STORE.cart));
   updateCartBadge();
-  showToast(`${product.emoji} ${product.name} added!`, 'success');
-}
-
-function removeFromCart(id) {
-  STATE.cart = STATE.cart.filter(i => i.id !== id);
-  save();
-  updateCartBadge();
-  renderCart();
-}
-
-function updateCartItemQty(id, delta) {
-  const item = STATE.cart.find(i => i.id === id);
-  if (!item) return;
-  item.qty = Math.max(1, item.qty + delta);
-  save();
-  renderCart();
+  showToast(`${prod.name} added to checkout cart.`);
 }
 
 function updateCartBadge() {
-  const count = STATE.cart.reduce((s, i) => s + i.qty, 0);
-  const badges = [document.getElementById('cartBadge'), document.getElementById('navCartBadge')];
-  badges.forEach(b => {
-    if (!b) return;
-    if (count > 0) { b.style.display = 'flex'; b.textContent = count; }
-    else { b.style.display = 'none'; }
-  });
-}
-
-function cartTotal() {
-  return STATE.cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const total = DATA_STORE.cart.reduce((a, b) => a + b.qty, 0);
+  const b = document.getElementById('cartBadge');
+  if (total > 0) { b.style.display = 'flex'; b.textContent = total; } else { b.style.display = 'none'; }
 }
 
 function renderCart() {
   const el = document.getElementById('cartContent');
-  if (STATE.cart.length === 0) {
-    el.innerHTML = `
-      <div class="cart-empty">
-        <div class="cart-empty-icon">🍽️</div>
-        <div class="cart-empty-text">Your cart is empty</div>
-        <div class="cart-empty-sub">Browse our fresh products<br/>and add them here</div>
-        <button onclick="navigate('home')" style="margin-top:20px;background:var(--accent);color:#000;border:none;border-radius:12px;padding:12px 24px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">
-          Browse Products
-        </button>
-      </div>`;
+  if(DATA_STORE.cart.length === 0) {
+    el.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted)">Cart is empty.</div>`;
     return;
   }
+  const sum = DATA_STORE.cart.reduce((s, i) => s + (i.price * i.qty), 0);
   el.innerHTML = `
     <div class="cart-items-wrap">
-      ${STATE.cart.map(item => `
+      ${DATA_STORE.cart.map(i => `
         <div class="cart-item">
-          <span class="cart-item-emoji">${item.emoji}</span>
           <div class="cart-item-info">
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-price">₦${item.price.toLocaleString()} × ${item.qty}</div>
+            <div style="font-weight:600">${i.emoji} ${i.name}</div>
+            <div style="font-size:12px; color:var(--muted)">₦${i.price.toLocaleString()} × ${i.qty}</div>
           </div>
-          <div class="cart-item-right">
-            <div class="cart-item-total">₦${(item.price*item.qty).toLocaleString()}</div>
-            <div style="display:flex;align-items:center;gap:4px">
-              <button class="qty-btn" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center" onclick="updateCartItemQty(${item.id},-1)">−</button>
-              <span style="font-size:12px;font-weight:700;min-width:20px;text-align:center">${item.qty}</span>
-              <button class="qty-btn" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;width:24px;height:24px;display:flex;align-items:center;justify-content:center" onclick="updateCartItemQty(${item.id},1)">+</button>
-              <button class="remove-btn" onclick="removeFromCart(${item.id})">🗑️</button>
-            </div>
-          </div>
+          <div style="font-family:'DM Serif Display'; color:var(--accent)">₦${(i.price*i.qty).toLocaleString()}</div>
         </div>
       `).join('')}
     </div>
     <div class="cart-footer">
-      <div class="cart-total-row">
-        <span class="cart-total-label">Order Total</span>
-        <span class="cart-total-amt">₦${cartTotal().toLocaleString()}</span>
-      </div>
-      <button class="checkout-btn" onclick="navigate('checkout')">Proceed to Checkout →</button>
+      <div style="display:flex; justify-content:between; margin-bottom:12px"><span>Total Amount</span><span style="font-family:'DM Serif Display'; font-size:22px; color:var(--accent); margin-left:auto;">₦${sum.toLocaleString()}</span></div>
+      <button class="checkout-btn" onclick="navigate('checkout')">Proceed to Checkout</button>
+      <button class="w-btn w-btn-withdraw" style="margin-top:8px; width:100%" onclick="DATA_STORE.cart=[]; localStorage.setItem('pr_cart','[]'); updateCartBadge(); renderCart();">Clear Cart</button>
     </div>`;
 }
 
 // ============================================================
-// CHECKOUT
+// GATEWAY CHECKOUT INTERFACE MANAGEMENT
 // ============================================================
+function selectPaymentMethod(m) {
+  DATA_STORE.selectedMethod = m;
+  document.querySelectorAll('.pay-method-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById(`method-${m}`).classList.add('selected');
+  document.getElementById('bankDetailsBox').style.display = (m === 'transfer') ? 'block' : 'none';
+}
+
 function renderCheckoutSummary() {
-  const el = document.getElementById('checkoutSummary');
-  el.innerHTML = `
-    <div class="form-title">Order Summary</div>
-    ${STATE.cart.map(i => `
-      <div class="order-summary-item">
-        <span>${i.emoji} ${i.name} × ${i.qty}</span>
-        <span style="color:var(--accent);font-weight:600">₦${(i.price*i.qty).toLocaleString()}</span>
-      </div>
-    `).join('')}
-    <div class="order-summary-total">
-      <span>Total</span>
-      <span>₦${cartTotal().toLocaleString()}</span>
+  const total = DATA_STORE.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  document.getElementById('checkout-wallet-lbl').textContent = `Pay instantly using safe savings (Bal: ₦${DATA_STORE.walletBalance.toLocaleString()})`;
+  document.getElementById('checkoutSummary').innerHTML = `
+    <div style="display:flex; justify-content:space-between; font-weight:700">
+      <span>Order Total:</span>
+      <span style="color:var(--accent); font-family:'DM Serif Display'">₦${total.toLocaleString()}</span>
     </div>`;
-
-  if (STATE.user) {
-    document.getElementById('inp-name').value = STATE.user.name || '';
-    document.getElementById('inp-email').value = STATE.user.email || '';
-    document.getElementById('inp-phone').value = STATE.user.phone || '';
-  }
 }
 
+// ============================================================
+// DYNAMIC MULTI-ADMIN ROUTING PLATFORM
+// ============================================================
 function placeOrder() {
   const name = document.getElementById('inp-name').value.trim();
   const phone = document.getElementById('inp-phone').value.trim();
-  const email = document.getElementById('inp-email').value.trim();
-  const address = document.getElementById('inp-address').value.trim();
+  const addr = document.getElementById('inp-address').value.trim();
+  const total = DATA_STORE.cart.reduce((s, i) => s + (i.price * i.qty), 0);
 
-  if (!name || !phone || !email || !address) {
-    showToast('Please fill all delivery details', 'error');
+  if(!name || !phone || !addr) { showToast('Please fulfill recipient parameters.', 'error'); return; }
+  if(DATA_STORE.cart.length === 0) { showToast('Cart content calculation error.', 'error'); return; }
+
+  // Check Wallet Payment Eligibility 
+  if (DATA_STORE.selectedMethod === 'wallet') {
+    if (!DATA_STORE.securePin) { showToast('Configure a vault security code first under profile!', 'error'); return; }
+    if (DATA_STORE.walletBalance < total) { showToast('Insufficient Vault funds.', 'error'); return; }
+    
+    // Solicit Pin Verification
+    openPinVerifySheet(() => executeOrderCreation(name, phone, addr, total, true));
     return;
   }
-  if (STATE.cart.length === 0) { showToast('Cart is empty', 'error'); return; }
 
-  const order = {
-    id: 'ORD-' + Date.now().toString().slice(-5),
-    customer_name: name,
-    customer_email: email,
-    customer_phone: phone,
-    address,
-    payment_choice: STATE.selectedPaymentMethod,
-    total: cartTotal(),
-    status: 'pending',
-    created_at: new Date().toISOString(),
-    items: STATE.cart.map(i => ({ name: i.name, emoji: i.emoji, qty: i.qty, price: i.price })),
+  executeOrderCreation(name, phone, addr, total, false);
+}
+
+function executeOrderCreation(name, phone, addr, total, deductedFromWallet) {
+  if (deductedFromWallet) {
+    DATA_STORE.walletBalance -= total;
+    DATA_STORE.walletLedger.unshift({ type: 'Purchase Debit', amount: total, date: new Date().toLocaleDateString() });
+    localStorage.setItem('pr_wbal', DATA_STORE.walletBalance.toString());
+    localStorage.setItem('pr_wledger', JSON.stringify(DATA_STORE.walletLedger));
+  }
+
+  const orderId = 'PRT-' + Math.floor(10000 + Math.random() * 90000);
+  const newOrder = {
+    id: orderId, name, phone, addr, total,
+    method: DATA_STORE.selectedMethod,
+    status: 0, // 0: Placed, 1: Processing, 2: Dispatched, 3: Arrived
+    eta: "Awaiting Admin Allocation",
+    items: DATA_STORE.cart.map(i => `${i.name} (x${i.qty})`)
   };
 
-  STATE.orders.unshift(order);
-  STATE.cart = [];
-  save();
+  DATA_STORE.orders.unshift(newOrder);
+  localStorage.setItem('pr_orders', JSON.stringify(DATA_STORE.orders));
+  
+  // Wipe tracking cart state parameters 
+  DATA_STORE.cart = [];
+  localStorage.setItem('pr_cart', '[]');
   updateCartBadge();
 
-  sendOrderNotifications(order).then(result => {
-    showOrderConfirmModal(order, result);
-  });
-}
+  // Route Notification details cleanly to available channel links 
+  const randomizedAdmin = ADMINS[Math.floor(Math.random() * ADMINS.length)];
+  const itemSummaryText = newOrder.items.join(', ');
+  
+  const smsPayload = `PROTINO HUB ORDER! ID: ${orderId}. Customer: ${name} (${phone}). Items: ${itemSummaryText}. Total: N${total.toLocaleString()}. Address: ${addr}. Payment: ${DATA_STORE.selectedMethod.toUpperCase()}. WE DELIVER FAST AT YOUR DOORSTEP!`;
+  const whatsappUrl = `https://wa.me/${randomizedAdmin.phone}?text=${encodeURIComponent(smsPayload)}`;
 
-// ============================================================
-// ORDERS
-// ============================================================
-function renderOrders() {
-  const el = document.getElementById('ordersWrap');
-  if (STATE.orders.length === 0) {
-    el.innerHTML = `
-      <div style="text-align:center;padding:60px 20px;color:var(--dim)">
-        <div style="font-size:48px;margin-bottom:16px">📦</div>
-        <div style="font-size:16px;color:var(--muted);font-family:'DM Serif Display',serif;margin-bottom:8px">No orders yet</div>
-        <div style="font-size:13px;margin-bottom:24px">Start shopping to see your orders here</div>
-        <button onclick="navigate('home')" style="background:var(--accent);color:#000;border:none;border-radius:12px;padding:12px 24px;font-weight:700;font-size:14px;cursor:pointer;font-family:'DM Sans',sans-serif">Browse Products</button>
-      </div>`;
-    return;
-  }
-  el.innerHTML = STATE.orders.map(o => {
-    const sc = STATUS_STYLES[o.status] || STATUS_STYLES.pending;
-    return `
-      <div class="order-card" onclick="cycleOrderStatus('${o.id}')">
-        <div class="order-card-header">
-          <div>
-            <div class="order-id">${o.id}</div>
-            <div class="order-date">${new Date(o.created_at).toLocaleString('en-NG', {dateStyle:'medium',timeStyle:'short'})}</div>
-          </div>
-          <div class="status-pill" style="background:${sc.bg};color:${sc.color}">${o.status}</div>
-        </div>
-        <div class="order-items-chips">
-          ${o.items.map(i => `<div class="order-item-chip">${i.emoji} ${i.name} ×${i.qty}</div>`).join('')}
-        </div>
-        <div class="order-card-footer">
-          <div class="order-addr">📍 ${o.address || 'Lagos, Nigeria'}</div>
-          <div class="order-total">₦${o.total.toLocaleString()}</div>
-        </div>
-        <span class="status-sim-hint">💡 Tap card to cycle tracking status dynamically</span>
-      </div>`;
-  }).join('');
-}
-
-// ============================================================
-// PROFILE
-// ============================================================
-function renderProfile() {
-  const el = document.getElementById('profileWrap');
-  if (!STATE.user) {
-    el.innerHTML = `
-      <div style="text-align:center;padding:60px 20px">
-        <div style="font-size:56px;margin-bottom:20px">👤</div>
-        <div style="font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:8px">Welcome to Protino Hub</div>
-        <div style="font-size:14px;color:var(--muted);margin-bottom:32px;line-height:1.6">Sign in to track your orders,<br/>save your address, and more</div>
-        <button onclick="openAuth('login')" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:14px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;font-family:'DM Serif Display',serif;margin-bottom:12px">
-          Sign In
-        </button>
-        <button onclick="openAuth('signup')" style="width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:14px;padding:16px;font-weight:600;font-size:15px;cursor:pointer;font-family:'DM Sans',sans-serif">
-          Create Account
-        </button>
-        <div style="margin-top:16px;font-size:11px;color:var(--dim)">
-          💡 Tip: Use "admin@protino.ng" to demo admin access
-        </div>
-      </div>`;
-    return;
-  }
-
-  const initials = STATE.user.name ? STATE.user.name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) : '?';
-  const isAdmin = STATE.user.role === 'admin';
-
-  el.innerHTML = `
-    <div class="profile-header">
-      <div class="avatar">${initials}</div>
-      <div>
-        <div class="profile-name">${STATE.user.name || 'User'}</div>
-        <div class="profile-email">${STATE.user.email || ''}</div>
-        <div class="profile-role">${STATE.user.role || 'customer'}</div>
+  // Show customized modern dispatch overlay execution panel
+  const modal = document.getElementById('globalModal');
+  modal.innerHTML = `
+    <div class="modal-sheet" style="text-align:center">
+      <span style="font-size:48px">🐓</span>
+      <h3 class="modal-title" style="color:var(--green)">Order Logged Successfully!</h3>
+      <p class="modal-sub" style="margin-top:8px">Your tracking number is <b>${orderId}</b>. To ensure processing fallback, confirm this transaction path directly with our warehouse coordinators below.</p>
+      
+      <div style="background:var(--surface2); border:1px solid var(--border); padding:12px; border-radius:10px; font-size:12px; text-align:left; margin-bottom:14px; color:var(--muted)">
+        <b>SMS Backup Dispatch Payload:</b><br/>
+        <span style="user-select:all; color:var(--text); font-size:11px;">${smsPayload}</span>
       </div>
-    </div>
 
-    ${isAdmin ? `
-    <div class="menu-section">
-      <div class="menu-title">Admin</div>
-      <div class="menu-item" onclick="showToast('Admin panel coming in next update!', 'success')">
-        <div class="menu-item-left">
-          <span class="menu-item-icon">⚙️</span>
-          <div>
-            <div class="menu-item-text">Admin Dashboard</div>
-            <div class="menu-item-sub">Manage orders, products & revenue</div>
-          </div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </div>
-    </div>` : ''}
-
-    <div class="menu-section">
-      <div class="menu-title">Account</div>
-      <div class="menu-item" onclick="navigate('orders')">
-        <div class="menu-item-left">
-          <span class="menu-item-icon">📦</span>
-          <div>
-            <div class="menu-item-text">My Orders</div>
-            <div class="menu-item-sub">${STATE.orders.length} order${STATE.orders.length!==1?'s':''} placed</div>
-          </div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </div>
-      <div class="menu-item" onclick="openWaSetup()">
-        <div class="menu-item-left">
-          <span class="menu-item-icon">&#128172;</span>
-          <div>
-            <div class="menu-item-text">WhatsApp Alerts</div>
-            <div class="menu-item-sub">Configure order notifications</div>
-          </div>
-        </div>
-        <span class="menu-arrow">›</span>
-      </div>
-    </div>
-
-    <button class="logout-btn" onclick="logout()">Sign Out</button>
-    <div style="height:16px"></div>`;
-}
-
-// ============================================================
-// AUTH
-// ============================================================
-function openAuth(mode) {
-  const modal = document.getElementById('authModal');
-  const content = document.getElementById('authContent');
-  const errorEl = document.getElementById('authError');
-  errorEl.style.display = 'none';
-
-  if (mode === 'login') {
-    content.innerHTML = `
-      <div class="modal-title">Welcome Back 👋</div>
-      <div class="modal-sub">Log in to track orders and save your details</div>
-      <div class="input-group">
-        <label class="input-label">Email Address</label>
-        <input class="text-input" id="auth-email" placeholder="you@example.com" type="email" />
-      </div>
-      <div class="input-group">
-        <label class="input-label">Password</label>
-        <input class="text-input" id="auth-pw" placeholder="••••••••" type="password" />
-      </div>
-      <button class="auth-btn" onclick="doLogin()">Sign In →</button>
-      <div class="auth-switch">
-        Don't have an account? <span class="auth-link" onclick="openAuth('signup')">Create one</span>
-      </div>`;
-  } else {
-    content.innerHTML = `
-      <div class="modal-title">Join Protino Hub 🐓</div>
-      <div class="modal-sub">Create your account and start ordering fresh proteins</div>
-      <div class="form-row">
-        <div class="input-group">
-          <label class="input-label">Full Name</label>
-          <input class="text-input" id="auth-name" placeholder="Amaka Obi" />
-        </div>
-        <div class="input-group">
-          <label class="input-label">Phone</label>
-          <input class="text-input" id="auth-phone" placeholder="08012345678" type="tel" />
-        </div>
-      </div>
-      <div class="input-group">
-        <label class="input-label">Email Address</label>
-        <input class="text-input" id="auth-email" placeholder="you@example.com" type="email" />
-      </div>
-      <div class="input-group">
-        <label class="input-label">Password</label>
-        <input class="text-input" id="auth-pw" placeholder="Min. 6 characters" type="password" />
-      </div>
-      <button class="auth-btn" onclick="doSignup()">Create Account →</button>
-      <div class="auth-switch">
-        Already have an account? <span class="auth-link" onclick="openAuth('login')">Sign in</span>
-      </div>`;
-  }
-  modal.classList.add('open');
-}
-
-function closeAuth() {
-  document.getElementById('authModal').classList.remove('open');
-}
-
-document.getElementById('authModal').addEventListener('click', function(e) {
-  if (e.target === this) closeAuth();
-});
-
-function showAuthError(msg) {
-  const el = document.getElementById('authError');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-function doLogin() {
-  const email = document.getElementById('auth-email')?.value.trim();
-  const pw = document.getElementById('auth-pw')?.value;
-  if (!email || !pw) { showAuthError('Please enter email and password'); return; }
-  const user = {
-    id: 'demo-' + Date.now(),
-    email,
-    name: email.split('@')[0].replace(/[._]/g,' ').replace(/\b\w/g, c => c.toUpperCase()),
-    role: email.includes('admin') ? 'admin' : 'customer',
-    phone: '',
-  };
-  STATE.user = user;
-  save();
-  closeAuth();
-  showToast(`Welcome back, ${user.name}! 👋`, 'success');
-  renderProfile();
-}
-
-function doSignup() {
-  const name = document.getElementById('auth-name')?.value.trim();
-  const phone = document.getElementById('auth-phone')?.value.trim();
-  const email = document.getElementById('auth-email')?.value.trim();
-  const pw = document.getElementById('auth-pw')?.value;
-  if (!name || !email || !pw) { showAuthError('Please fill all required fields'); return; }
-  if (pw.length < 6) { showAuthError('Password must be at least 6 characters'); return; }
-  const user = { id: 'user-' + Date.now(), name, email, phone, role: 'customer' };
-  STATE.user = user;
-  save();
-  closeAuth();
-  showToast(`Welcome to Protino Hub, ${name}! 🎉`, 'success');
-  renderProfile();
-}
-
-function logout() {
-  STATE.user = null;
-  localStorage.removeItem('ph_user');
-  showToast('Logged out successfully', 'success');
-  renderProfile();
-}
-
-// ============================================================
-// PWA — Service Worker & Manifest
-// ============================================================
-const MANIFEST = {
-  name: "Protino Hub",
-  short_name: "Protino",
-  description: "Premium animal proteins delivered fresh across Nigeria",
-  start_url: "/",
-  display: "standalone",
-  background_color: "#0c0c0c",
-  theme_color: "#0c0c0c",
-  orientation: "portrait",
-  icons: [
-    { src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%230c0c0c' rx='32'/><text y='130' x='96' font-size='110' text-anchor='middle'>🐓</text></svg>", sizes: "192x192", type: "image/svg+xml" }
-  ]
-};
-
-const manifestBlob = new Blob([JSON.stringify(MANIFEST)], { type: 'application/manifest+json' });
-document.getElementById('manifest-link').href = URL.createObjectURL(manifestBlob);
-
-// ============================================================
-// NOTIFICATIONS — WhatsApp + SMS Config
-// ============================================================
-const NOTIFY_CONFIG = {
-  adminPhone:   localStorage.getItem('ph_admin_phone')   || '2348012345678',
-  termiiKey:    localStorage.getItem('ph_termii_key')    || '',
-  termiiSender: localStorage.getItem('ph_termii_sender') || 'Protino',
-  channel:      localStorage.getItem('ph_notify_channel') || 'auto',
-};
-
-function buildWhatsAppMsg(order) {
-  const lines = order.items.map(i => `  • ${i.emoji} ${i.name} ×${i.qty}`).join('\n');
-  return (
-    `🐓 *PROTINO HUB — Order Received!*\n\n` +
-    `Hi ${order.customer_name},\n` +
-    `Your order *${order.id}* has been logged via *${order.payment_choice.toUpperCase()}*.\n\n` +
-    `⚡ *WE DELIVER FAST AT YOUR DOOR STEP!*\n\n` +
-    `*Items:*\n${lines}\n\n` +
-    `*Total:* ₦${order.total.toLocaleString()}\n` +
-    `*Address:* ${order.address}\n\n` +
-    `_Our team will dispatch your item within 1-2 hours._`
-  );
-}
-
-function buildAdminWhatsAppMsg(order) {
-  return `📢 *NEW PROTINO ORDER: ${order.id}*\n\nCustomer: ${order.customer_name}\nPhone: ${order.customer_phone}\nPay Option: ${order.payment_choice.toUpperCase()}\nTotal: ₦${order.total.toLocaleString()}\nAddress: ${order.address}`;
-}
-
-function normalisePhone(phone) { return phone.replace(/\D/g,'').replace(/^0/,'234'); }
-function waLink(phone, message) { return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`; }
-
-async function sendOrderNotifications(order) {
-  const custPhone  = normalisePhone(order.customer_phone);
-  const adminPhone = normalisePhone(NOTIFY_CONFIG.adminPhone);
-  return {
-    customerWaUrl:  waLink(custPhone,  buildWhatsAppMsg(order)),
-    adminWaUrl:     waLink(adminPhone, buildAdminWhatsAppMsg(order)),
-    termiiResults:  [],
-    autoSent:       false,
-  };
-}
-
-function showOrderConfirmModal(order, result) {
-  const modal   = document.getElementById('authModal');
-  const content = document.getElementById('authContent');
-  document.getElementById('authError').style.display = 'none';
-
-  content.innerHTML = `
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:52px;margin-bottom:10px">🎉</div>
-      <div class="modal-title" style="text-align:center">Order Placed!</div>
-      <div class="modal-sub" style="text-align:center; color:var(--green); font-weight:700;">
-        WE DELIVER FAST AT YOUR DOOR STEP!
-      </div>
-      <div class="modal-sub" style="text-align:center">
-        ID: <b style="color:var(--accent)">${order.id}</b> — ₦${order.total.toLocaleString()}
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
-      <a href="${result.customerWaUrl}" target="_blank" style="text-decoration:none">
-        <div style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.3);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer">
-          <div style="font-size:26px">💬</div>
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:700;color:#25D366">Confirm on WhatsApp</div>
-            <div style="font-size:11px;color:var(--muted)">Send receipt info directly to customer</div>
-          </div>
-        </div>
+      <a href="${whatsappUrl}" target="_blank" onclick="document.getElementById('globalModal').classList.remove('open'); navigate('orders');" style="text-decoration:none">
+        <button class="checkout-btn" style="background:#25D366; color:#fff">👉 Open Admin WhatsApp Coordinator</button>
       </a>
+      <button class="w-btn w-btn-withdraw" style="margin-top:8px; width:100%" onclick="document.getElementById('globalModal').classList.remove('open'); navigate('orders');">View Tracker Directly</button>
     </div>
-
-    <button onclick="closeAuth();navigate('orders');"
-      style="width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;font-family:'DM Serif Display',serif">
-      Track Order History →
-    </button>`;
-
-  modal.classList.add('open');
-}
-
-function openWaSetup() {
-  const modal   = document.getElementById('authModal');
-  const content = document.getElementById('authContent');
-  document.getElementById('authError').style.display = 'none';
-
-  content.innerHTML = `
-    <div class="modal-title">🔔 Alert Config</div>
-    <div class="modal-sub">Set up global dashboard system alerts variables.</div>
-    <div class="input-group" style="margin-bottom:12px">
-      <label class="input-label">Admin Phone Number</label>
-      <input class="text-input" id="wa-admin-phone" value="${NOTIFY_CONFIG.adminPhone}" />
-    </div>
-    <button onclick="saveNotifySettings()" style="width:100%; background:var(--accent); color:#000; border:none; padding:12px; border-radius:10px; font-weight:700;">Save Alter Configs</button>
   `;
   modal.classList.add('open');
 }
 
-function saveNotifySettings() {
-  const p = document.getElementById('wa-admin-phone').value.trim();
-  if(p) {
-    localStorage.setItem('ph_admin_phone', p);
-    NOTIFY_CONFIG.adminPhone = p;
-    showToast('Settings Saved!', 'success');
-    closeAuth();
+// ============================================================
+// DYNAMIC SUPPLY CHAIN PROGRESS TRACKING
+// ============================================================
+function advanceOrderStatusSimulation(id) {
+  const ord = DATA_STORE.orders.find(o => o.id === id);
+  if(!ord) return;
+  ord.status = (ord.status + 1) % 4;
+  localStorage.setItem('pr_orders', JSON.stringify(DATA_STORE.orders));
+  renderOrders();
+  showToast(`Simulated status variable updated to Node Level: ${ord.status}`);
+}
+
+function updateAdminEta(id, event) {
+  event.stopPropagation();
+  const ord = DATA_STORE.orders.find(o => o.id === id);
+  const newEta = prompt("Enter updated flexible delivery time estimate (e.g., '45 Mins', '1.5 Hours due to traffic'):", ord.eta);
+  if(newEta) {
+    ord.eta = newEta;
+    localStorage.setItem('pr_orders', JSON.stringify(DATA_STORE.orders));
+    renderOrders();
+    showToast("Flexible allocation window updated.");
   }
 }
 
-// ============================================================
-// INIT
-// ============================================================
-function init() {
-  renderCategories();
-  renderProducts();
-  updateCartBadge();
+function renderOrders() {
+  const el = document.getElementById('ordersWrap');
+  if(DATA_STORE.orders.length === 0) {
+    el.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted)">No orders currently under monitoring.</div>`;
+    return;
+  }
+  el.innerHTML = DATA_STORE.orders.map(o => `
+    <div class="order-card" onclick="advanceOrderStatusSimulation('${o.id}')">
+      <div style="display:flex; justify-content:space-between; font-size:13px">
+        <span>ID: <b>${o.id}</b></span>
+        <span style="color:var(--accent); font-weight:700">₦${o.total.toLocaleString()}</span>
+      </div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px">📦 Items: ${o.items.join(', ')}</div>
+      
+      <div class="eta-box">
+        <span>⏱️ Flexible Est. Delivery Time: <b>${o.eta}</b></span>
+        <span class="admin-ctrl-badge" onclick="updateAdminEta('${o.id}', event)">Set ETA</span>
+      </div>
+
+      <div class="track-timeline">
+        <div class="track-progress-bar" style="width: ${o.status * 33.3}%"></div>
+        <div class="track-node ${o.status >= 0 ? (o.status===0?'active':'completed') : ''}"><div class="track-dot">✔</div><span class="track-lbl">Logged</span></div>
+        <div class="track-node ${o.status >= 1 ? (o.status===1?'active':'completed') : ''}"><div class="track-dot">⚙️</div><span class="track-lbl">Processing</span></div>
+        <div class="track-node ${o.status >= 2 ? (o.status===2?'active':'completed') : ''}"><div class="track-dot">🛵</div><span class="track-lbl">Dispatched</span></div>
+        <div class="track-node ${o.status >= 3 ? (o.status===3?'active':'completed') : ''}"><div class="track-dot">🏠</div><span class="track-lbl">Arrived</span></div>
+      </div>
+      
+      <span style="font-size:9px; color:var(--dim); text-align:center; display:block; width:100%">💡 Simulated Vendor View: Tap card layout boundary to cycle shipping step filters.</span>
+    </div>
+  `).join('');
 }
 
-init();
+// ============================================================
+// DIGITAL TRUST WALLET & PIN SYSTEM ARCHITECTURE
+// ============================================================
+function refreshWalletUI() {
+  document.getElementById('walletBalDisplay').textContent = `₦${DATA_STORE.walletBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+  document.getElementById('pin-status-text').innerHTML = DATA_STORE.securePin 
+    ? `<span style="color:var(--green)">✔ Security Protection Vault Active (PIN set)</span>` 
+    : `<span style="color:var(--red)">⚠️ Vault Vulnerable — No Transaction Pin configured.</span>`;
+    
+  const ledgerEl = document.getElementById('walletLedger');
+  if(DATA_STORE.walletLedger.length === 0) {
+    ledgerEl.innerHTML = "No recent transactions logged.";
+  } else {
+    ledgerEl.innerHTML = DATA_STORE.walletLedger.map(l => `
+      <div style="display:flex; justify-content:space-between; background:var(--surface2); padding:8px 12px; border-radius:8px">
+        <span>${l.type} (${l.date})</span>
+        <span style="color:${l.type.includes('Deposit')?'var(--green)':'var(--red)'}">${l.type.includes('Deposit')?'+':'-'}₦${l.amount.toLocaleString()}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function openPinSetup() {
+  const modal = document.getElementById('globalModal');
+  modal.innerHTML = `
+    <div class="modal-sheet">
+      <h3 class="modal-title">Configure Secure Core PIN</h3>
+      <p class="modal-sub">Create a secret 4-digit code to authorize any future wallet withdrawals or order transactions.</p>
+      <input type="password" id="new-pin-input" class="text-input" placeholder="Type 4 digits" maxlength="4" style="-webkit-text-security: disc; text-align:center; font-size:24px; letter-spacing:10px;" />
+      <button class="checkout-btn" style="margin-top:14px" onclick="saveNewPin()">Lock Vault Parameters</button>
+    </div>`;
+  modal.classList.add('open');
+}
+
+function saveNewPin() {
+  const pin = document.getElementById('new-pin-input').value.trim();
+  if(pin.length !== 4 || isNaN(pin)) { alert("PIN execution schema must match exactly 4 digits."); return; }
+  DATA_STORE.securePin = pin;
+  localStorage.setItem('pr_pin', pin);
+  document.getElementById('globalModal').classList.remove('open');
+  showToast("Vault Access Credentials Instantiated Successfully.");
+  refreshWalletUI();
+}
+
+function openWalletAction(action) {
+  const modal = document.getElementById('globalModal');
+  if(action === 'deposit') {
+    modal.innerHTML = `
+      <div class="modal-sheet">
+        <h3 class="modal-title">Deposit Into Protino Vault</h3>
+        <p class="modal-sub">Transfer any amount from your mobile banking app to the official banking vault partner coordinates below:</p>
+        <div style="background:var(--surface2); padding:14px; border-radius:12px; font-size:14px; border:1px solid var(--border); margin-bottom:12px">
+          <div><b>Bank Name:</b> OPay</div>
+          <div style="display:flex; justify-content:space-between; margin:4px 0"><span><b>Account:</b> 6464386827</span><span style="color:var(--accent); cursor:pointer" onclick="copyText('6464386827','Copied')">Copy</span></div>
+          <div><b>Beneficiary:</b> CHINEDU EMMANUEL</div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Amount Deposited (₦)</label>
+          <input type="number" id="wallet-amt-input" class="text-input" placeholder="5000" />
+        </div>
+        <button class="checkout-btn" onclick="submitWalletAction('deposit')">Confirm Balance Topup</button>
+      </div>`;
+  } else {
+    modal.innerHTML = `
+      <div class="modal-sheet">
+        <h3 class="modal-title">Secure Vault Asset Withdrawal</h3>
+        <p class="modal-sub">Transfer funds out of your app back to a local bank account instantly.</p>
+        <div class="input-group"><label class="input-label">Destination Bank Account</label><input type="number" class="text-input" placeholder="9064386827" /></div>
+        <div class="input-group"><label class="input-label">Amount to Cashout (₦)</label><input type="number" id="wallet-amt-input" class="text-input" placeholder="2000" /></div>
+        <button class="checkout-btn" style="background:var(--red); color:white" onclick="submitWalletAction('withdraw')">Authorize Capital Liquidation</button>
+      </div>`;
+  }
+  modal.classList.add('open');
+}
+
+function submitWalletAction(type) {
+  const amt = parseFloat(document.getElementById('wallet-amt-input').value);
+  if(!amt || amt <= 0) { alert("Invalid monetary valuation field input."); return; }
+  
+  if(type === 'withdraw' && amt > DATA_STORE.walletBalance) { alert("Insufficient clear liquidation capital balance."); return; }
+
+  if (!DATA_STORE.securePin) { alert("Please establish an identity PIN setting structure first before transferring funds."); return; }
+
+  openPinVerifySheet(() => {
+    if(type === 'deposit') {
+      DATA_STORE.walletBalance += amt;
+      DATA_STORE.walletLedger.unshift({ type: 'Savings Deposit', amount: amt, date: new Date().toLocaleDateString() });
+    } else {
+      DATA_STORE.walletBalance -= amt;
+      DATA_STORE.walletLedger.unshift({ type: 'Bank Withdrawal', amount: amt, date: new Date().toLocaleDateString() });
+    }
+    localStorage.setItem('pr_wbal', DATA_STORE.walletBalance.toString());
+    localStorage.setItem('pr_wledger', JSON.stringify(DATA_STORE.walletLedger));
+    document.getElementById('globalModal').classList.remove('open');
+    showToast("Vault modifications logged successfully.");
+    refreshWalletUI();
+  });
+}
+
+function openPinVerifySheet(successCallback) {
+  const container = document.getElementById('globalModal');
+  container.innerHTML = `
+    <div class="modal-sheet" style="text-align:center">
+      <h3 class="modal-title">🔐 Input Transaction PIN</h3>
+      <p class="modal-sub">Verify your identity parameters to proceed with account modifications.</p>
+      <input type="password" id="verify-pin-input" class="text-input" placeholder="••••" maxlength="4" style="-webkit-text-security: disc; text-align:center; font-size:24px; letter-spacing:10px;" />
+      <button class="checkout-btn" style="margin-top:14px" id="pinConfirmActionBtn">Authorize Action Link</button>
+    </div>`;
+  container.classList.add('open');
+  
+  document.getElementById('pinConfirmActionBtn').onclick = () => {
+    const inputPin = document.getElementById('verify-pin-input').value.trim();
+    if(inputPin === DATA_STORE.securePin) {
+      successCallback();
+    } else {
+      alert("Invalid Security Signature. Authorization blocked.");
+      container.classList.remove('open');
+    }
+  };
+}
 </script>
 </body>
 </html>
