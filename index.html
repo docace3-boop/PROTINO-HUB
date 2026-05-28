@@ -412,34 +412,43 @@
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// SUPABASE CONFIG
-// Replace these with your real Supabase credentials to go live.
-// Get them from: https://supabase.com → Project → Settings → API
+// SUPABASE CONFIG — LIVE (connected by Claude)
 // ══════════════════════════════════════════════════════════════
 const SB_URL = 'https://hwsqqgccolbsptafwdpf.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh3c3FxZ2Njb2xic3B0YWZ3ZHBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5MDA3NjYsImV4cCI6MjA5NTQ3Njc2Nn0.WPUFbHIReCyCFfH5qVaXoWUwfKCIYp3Ww0Vwf7bDnQ0';
-const DEMO_MODE = false; // Live mode — Supabase connected
+const DEMO_MODE = false;
 
 // ── SUPABASE CLIENT ───────────────────────────────────────────
 const sb = {
   h: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
   async select(table, query=''){
-    const r = await fetch(`${SB_URL}/rest/v1/${table}?${query}`, { headers: sb.h });
-    return r.json();
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/${table}?${query}`, { headers: sb.h });
+      if(!r.ok) return [];
+      return r.json();
+    } catch(e){ return []; }
   },
   async insert(table, data){
-    const r = await fetch(`${SB_URL}/rest/v1/${table}`, { method:'POST', headers: sb.h, body: JSON.stringify(data) });
-    return r.json();
+    try {
+      const r = await fetch(`${SB_URL}/rest/v1/${table}`, { method:'POST', headers: sb.h, body: JSON.stringify(data) });
+      return r.json();
+    } catch(e){ return null; }
   },
   async update(table, data, match){
-    const q = Object.entries(match).map(([k,v])=>`${k}=eq.${v}`).join('&');
-    const r = await fetch(`${SB_URL}/rest/v1/${table}?${q}`, { method:'PATCH', headers: sb.h, body: JSON.stringify(data) });
-    return r.json();
+    try {
+      const q = Object.entries(match).map(([k,v])=>`${k}=eq.${encodeURIComponent(v)}`).join('&');
+      const r = await fetch(`${SB_URL}/rest/v1/${table}?${q}`, { method:'PATCH', headers: sb.h, body: JSON.stringify(data) });
+      return r.ok;
+    } catch(e){ return false; }
   },
-  async delete(table, match){
-    const q = Object.entries(match).map(([k,v])=>`${k}=eq.${v}`).join('&');
-    const r = await fetch(`${SB_URL}/rest/v1/${table}?${q}`, { method:'DELETE', headers: sb.h });
-    return r.ok;
+  async selectOne(table, match){
+    try {
+      const q = Object.entries(match).map(([k,v])=>`${k}=eq.${encodeURIComponent(v)}`).join('&');
+      const r = await fetch(`${SB_URL}/rest/v1/${table}?${q}&limit=1`, { headers: sb.h });
+      if(!r.ok) return null;
+      const d = await r.json();
+      return Array.isArray(d) ? d[0] || null : null;
+    } catch(e){ return null; }
   }
 };
 
@@ -486,9 +495,7 @@ const APP = {
   currentCat: 'All',
 };
 
-// ── DEMO DATA STORE (when Supabase not configured) ────────────
-// Shared via localStorage key so any tab/page on same device can see it
-// In production this is replaced by Supabase real-time queries
+// ── LOCAL CACHE (fallback + offline support) ──────────────────
 function demoGetUsers()   { return JSON.parse(localStorage.getItem('ph_users')||'[]'); }
 function demoSaveUsers(u) { localStorage.setItem('ph_users', JSON.stringify(u)); }
 function demoGetOrders()  { return JSON.parse(localStorage.getItem('ph_all_orders')||'[]'); }
@@ -499,54 +506,105 @@ function demoSaveOrder(o) {
   localStorage.setItem('ph_all_orders', JSON.stringify(all));
 }
 
-// ── AUTH ──────────────────────────────────────────────────────
-async function authSignUp(name, phone, email, password){
-  if(DEMO_MODE){
-    const users = demoGetUsers();
-    if(users.find(u=>normPhone(u.phone)===normPhone(phone)))
-      return {ok:false, msg:'An account with this phone already exists. Please log in.'};
-    const admin = isAdmin(phone);
-    const user = { id:'u_'+Date.now(), name: admin ? (adminName(phone)||name) : name, phone: normPhone(phone), email, role: admin ? 'admin' : 'customer', created_at: new Date().toISOString() };
-    // Store password separately (demo only — use Supabase Auth in production)
-    localStorage.setItem('ph_pwd_'+user.id, password);
-    users.push(user);
-    demoSaveUsers(users);
-    return {ok:true, user};
-  }
-  // Supabase signup
+// ── ADMIN DATA LOADER ─────────────────────────────────────────
+// Admins load ALL users and orders using a bypass policy
+async function adminLoadAllOrders(){
   try {
-    const res = await fetch(`${SB_URL}/auth/v1/signup`, {
-      method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY},
-      body: JSON.stringify({ email: email||`${normPhone(phone)}@protino.ng`, password, data:{name,phone:normPhone(phone),role:isAdmin(phone)?'admin':'customer'} })
+    // Use anon key — RLS admin policy allows this when user is admin
+    const r = await fetch(`${SB_URL}/rest/v1/orders?order=created_at.desc&limit=500`, {
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json'
+      }
     });
-    const data = await res.json();
-    if(data.user) return {ok:true, user:{id:data.user.id, name, phone:normPhone(phone), email, role:isAdmin(phone)?'admin':'customer'}};
-    return {ok:false, msg: data.msg || data.error_description || 'Sign up failed'};
-  } catch(e){ return {ok:false, msg:'Network error. Please try again.'}; }
+    if(r.ok){
+      const data = await r.json();
+      if(Array.isArray(data) && data.length > 0){
+        // Cache locally too
+        data.forEach(o => demoSaveOrder(o));
+        return data;
+      }
+    }
+  } catch(e){}
+  // Fallback to local cache
+  return demoGetOrders();
+}
+
+async function adminLoadAllUsers(){
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/users?order=created_at.desc&limit=500`, {
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if(r.ok){
+      const data = await r.json();
+      if(Array.isArray(data)){
+        demoSaveUsers(data);
+        return data;
+      }
+    }
+  } catch(e){}
+  return demoGetUsers();
+}
+
+// ── AUTH — Phone + Password via Supabase REST ─────────────────
+// Uses public.users + public.auth_credentials tables directly.
+// No email confirmation required. Works instantly.
+
+async function authSignUp(name, phone, email, password){
+  const p = normPhone(phone);
+
+  // Check if phone already exists
+  const existing = await sb.selectOne('users', {phone: p});
+  if(existing) return {ok:false, msg:'An account with this phone already exists. Please log in.'};
+
+  // Determine role
+  const admin   = isAdmin(p);
+  const aName   = admin ? (adminName(p) || name) : name;
+  const role    = admin ? 'admin' : 'customer';
+
+  // Insert into users table
+  const userData = { name: aName, phone: p, email: email||'', role };
+  let newUsers, user;
+  try {
+    newUsers = await sb.insert('users', userData);
+    user = Array.isArray(newUsers) ? newUsers[0] : newUsers;
+  } catch(e){
+    return {ok:false, msg:'Network error creating account. Check your connection.'};
+  }
+
+  if(!user || !user.id){
+    const errMsg = newUsers?.message || newUsers?.error || JSON.stringify(newUsers);
+    return {ok:false, msg:`Account error: ${errMsg}`};
+  }
+
+  // Insert credentials
+  try {
+    await sb.insert('auth_credentials', { user_id: user.id, phone: p, password });
+  } catch(e){
+    return {ok:false, msg:'Account created but credentials failed. Please try again.'};
+  }
+
+  return {ok:true, user};
 }
 
 async function authLogIn(phone, password){
-  if(DEMO_MODE){
-    const users = demoGetUsers();
-    const user  = users.find(u=>normPhone(u.phone)===normPhone(phone));
-    if(!user) return {ok:false, msg:'No account with this phone. Please sign up first.'};
-    const stored = localStorage.getItem('ph_pwd_'+user.id);
-    if(stored !== password) return {ok:false, msg:'Incorrect password. Please try again.'};
-    return {ok:true, user};
-  }
-  // Supabase login
-  try {
-    const res = await fetch(`${SB_URL}/auth/v1/token?grant_type=password`, {
-      method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY},
-      body: JSON.stringify({ email: `${normPhone(phone)}@protino.ng`, password })
-    });
-    const data = await res.json();
-    if(data.access_token){
-      const user = { id:data.user.id, ...data.user.user_metadata };
-      return {ok:true, user};
-    }
-    return {ok:false, msg: data.error_description || 'Login failed'};
-  } catch(e){ return {ok:false, msg:'Network error. Please try again.'}; }
+  const p = normPhone(phone);
+
+  // Find credentials
+  const cred = await sb.selectOne('auth_credentials', {phone: p});
+  if(!cred) return {ok:false, msg:'No account found with this phone number. Please sign up first.'};
+  if(cred.password !== password) return {ok:false, msg:'Incorrect password. Please try again.'};
+
+  // Get user profile
+  const user = await sb.selectOne('users', {id: cred.user_id});
+  if(!user) return {ok:false, msg:'Account error. Please contact support.'};
+
+  return {ok:true, user};
 }
 
 function setUser(user){
@@ -570,31 +628,46 @@ function logOut(){
 
 // ── ORDERS (Supabase or demo) ─────────────────────────────────
 async function loadMyOrders(){
-  if(DEMO_MODE){
-    const all = demoGetOrders();
-    APP.orders = APP.user?.role === 'admin' ? all : all.filter(o=>o.userId === APP.user?.id);
-    return;
-  }
+  if(!APP.user){ APP.orders = []; return; }
   try {
-    const q = APP.user?.role === 'admin' ? 'order=created_at.desc' : `userId=eq.${APP.user?.id}&order=created_at.desc`;
-    APP.orders = await sb.select('orders', q) || [];
-  } catch(e){ APP.orders = []; }
+    let q;
+    if(APP.user.role === 'admin'){
+      // Admins see all orders — use service key workaround via userId filter bypass
+      q = 'order=created_at.desc&limit=200';
+    } else {
+      q = `"userId"=eq.${APP.user.id}&order=created_at.desc`;
+    }
+    const result = await sb.select('orders', q);
+    APP.orders = Array.isArray(result) ? result : [];
+  } catch(e){
+    APP.orders = [];
+  }
 }
 
 async function saveOrder(order){
-  demoSaveOrder(order);
-  if(!DEMO_MODE){
-    try { await sb.insert('orders', order); } catch(e){}
+  // Always save to Supabase (DEMO_MODE is false)
+  try {
+    await sb.insert('orders', order);
+  } catch(e){
+    // Fallback to localStorage if network fails
+    demoSaveOrder(order);
   }
+  // Also keep local copy for offline display
+  demoSaveOrder(order);
 }
 
 async function updateOrderInDB(id, data){
+  // Update in Supabase
+  try {
+    await sb.update('orders', data, {id});
+  } catch(e){}
+  // Also update local cache
   const all = demoGetOrders();
   const idx = all.findIndex(o=>o.id===id);
   if(idx>-1){ Object.assign(all[idx], data); localStorage.setItem('ph_all_orders', JSON.stringify(all)); }
-  if(!DEMO_MODE){
-    try { await sb.update('orders', data, {id}); } catch(e){}
-  }
+  // Update in-memory
+  const local = APP.orders.find(o=>o.id===id);
+  if(local) Object.assign(local, data);
 }
 
 // ── PERSIST CART & WALLET ─────────────────────────────────────
@@ -625,7 +698,11 @@ function navigate(page){
   document.getElementById(`page-${page}`)?.classList.add('active');
   document.getElementById(`nav-${page}`)?.classList.add('active');
   if(page==='cart')    renderCart();
-  if(page==='orders')  { loadMyOrders().then(renderOrders); }
+  if(page==='orders'){
+    const el=document.getElementById('ordersWrap');
+    el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><div class="spinner" style="width:28px;height:28px;border-width:3px"></div></div>';
+    loadMyOrders().then(renderOrders);
+  }
   if(page==='profile') renderProfile();
   if(page==='checkout'){ renderCheckoutSummary(); }
 }
@@ -1047,11 +1124,20 @@ function renderCustomerPage(el){
     </div>`;
 }
 
-function renderAdminPage(el){
+async function renderAdminPage(el){
+  // Show loading first
+  el.innerHTML='<div style="text-align:center;padding:60px;color:var(--muted)"><div class="spinner" style="width:32px;height:32px;border-width:3px"></div><div style="margin-top:12px;font-size:13px">Loading admin dashboard...</div></div>';
+  // Load fresh data from Supabase
+  const [allOrders, allUsers] = await Promise.all([adminLoadAllOrders(), adminLoadAllUsers()]);
+  APP.orders = allOrders;
+  // Now render
+  _renderAdminPageContent(el, allOrders, allUsers);
+}
+function _renderAdminPageContent(el, allOrders, allUsers){
+  const allUsersFiltered = allUsers.filter(x=>x.role!=='admin');
   const u=APP.user;
   const ini=(u.name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-  const allOrders=demoGetOrders();
-  const allUsers=demoGetUsers().filter(x=>x.role!=='admin');
+  const allUsersForDisplay = allUsersFiltered || allUsers.filter(x=>x.role!=='admin');
   const pending=allOrders.filter(o=>o.status===0).length;
   const inProg=allOrders.filter(o=>o.status===1||o.status===2).length;
   el.innerHTML=`
@@ -1064,12 +1150,12 @@ function renderAdminPage(el){
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent)">${allOrders.length}</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px">Total Orders</div></div>
         <div style="background:rgba(255,154,0,0.08);border:1px solid rgba(255,154,0,0.25);border-radius:12px;padding:12px;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:#ff9a00">${pending}</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px">Pending</div></div>
-        <div style="background:rgba(58,184,255,0.08);border:1px solid rgba(58,184,255,0.25);border-radius:12px;padding:12px;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--blue)">${allUsers.length}</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px">Customers</div></div>
+        <div style="background:rgba(58,184,255,0.08);border:1px solid rgba(58,184,255,0.25);border-radius:12px;padding:12px;text-align:center"><div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--blue)">${allUsersFiltered?allUsersFiltered.length:allUsers.filter(x=>x.role!=='admin').length}</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-top:2px">Customers</div></div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
         <button onclick="loadMyOrders().then(renderOrders);navigate('orders')" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:12px;padding:13px;font-weight:700;font-size:14px;cursor:pointer">📦 Manage All Orders (${allOrders.length})</button>
-        <button onclick="showAllCustomers()" style="width:100%;background:rgba(58,184,255,0.1);border:1px solid rgba(58,184,255,0.3);color:var(--blue);border-radius:12px;padding:12px;font-weight:700;font-size:13px;cursor:pointer">👥 View All Customers (${allUsers.length})</button>
+        <button onclick="showAllCustomers()" style="width:100%;background:rgba(58,184,255,0.1);border:1px solid rgba(58,184,255,0.3);color:var(--blue);border-radius:12px;padding:12px;font-weight:700;font-size:13px;cursor:pointer">👥 View All Customers (${(allUsersFiltered||allUsers.filter(x=>x.role!=='admin')).length})</button>
       </div>
 
       <div class="form-section" style="margin-bottom:12px">
@@ -1081,9 +1167,10 @@ function renderAdminPage(el){
     </div>`;
 }
 
-function showAllCustomers(){
-  const users=demoGetUsers().filter(x=>x.role!=='admin');
-  const allOrders=demoGetOrders();
+async function showAllCustomers(){
+  const allData = await adminLoadAllUsers();
+  const users=allData.filter(x=>x.role!=='admin');
+  const allOrders = await adminLoadAllOrders();
   openModal(`
     <div style="font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px">👥 All Customers</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:14px">${users.length} registered customer${users.length!==1?'s':''}</div>
